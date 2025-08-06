@@ -32,10 +32,10 @@ const MealPlanner = () => {
     "Recipe tin eats mince Asian dish": ["Ground mince", "Soy sauce", "Sesame oil", "Garlic", "Ginger", "Asian vegetables", "Rice noodles"],
     "Ottolenghi cauliflower patties": ["Cauliflower", "Eggs", "Flour", "Parmesan cheese", "Fresh herbs", "Breadcrumbs"],
     "Katsu don": ["Chicken breast", "Panko breadcrumbs", "Eggs", "Flour", "Rice", "Onion", "Soy sauce", "Mirin"],
-    "Holly's miso chicken": ["Chicken thighs", "Miso paste", "Mirin", "Sake/cooking wine", "Sugar", "Ginger"],
+    "Holly&apos;s miso chicken": ["Chicken thighs", "Miso paste", "Mirin", "Sake/cooking wine", "Sugar", "Ginger"],
     "Enchiladas": ["Corn tortillas", "Chicken", "Enchilada sauce", "Cheese", "Onion", "Sour cream", "Coriander"],
     "Chicken cashew stirfry": ["Chicken breast", "Cashews", "Asian vegetables", "Soy sauce", "Oyster sauce", "Garlic", "Ginger"],
-    "Abuelas Mexican chicken": ["Chicken pieces", "Mexican spices", "Tomatoes", "Onion", "Capsicum", "Rice"],
+    "Abuela&apos;s Mexican chicken": ["Chicken pieces", "Mexican spices", "Tomatoes", "Onion", "Capsicum", "Rice"],
     "Vietnamese noodle salad": ["Rice noodles", "Fresh herbs", "Cucumber", "Carrots", "Bean sprouts", "Fish sauce", "Lime", "Chilli"],
     "Enfrijoladas": ["Corn tortillas", "Black beans", "Mexican cheese", "Onion", "Avocado", "Sour cream"],
     "Musamun curry": ["Beef/chicken", "Musamun curry paste", "Coconut milk", "Potatoes", "Peanuts", "Fish sauce"],
@@ -45,7 +45,7 @@ const MealPlanner = () => {
     "Jamie Oliver Salmon": ["Salmon fillets", "Lemon", "Herbs", "Olive oil", "Vegetables"],
     "Slow cooker meals": ["Meat (beef/chicken/pork)", "Vegetables", "Stock", "Herbs", "Potatoes"],
     "Quinoa dish": ["Quinoa", "Vegetables", "Feta cheese", "Olive oil", "Lemon", "Fresh herbs"],
-    "Shepherds pie": ["Ground lamb/beef", "Potatoes", "Peas", "Carrots", "Stock", "Worcestershire sauce"]
+    "Shepherd&apos;s pie": ["Ground lamb/beef", "Potatoes", "Peas", "Carrots", "Stock", "Worcestershire sauce"]
   };
 
   const staplesList = [
