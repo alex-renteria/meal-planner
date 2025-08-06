@@ -114,7 +114,7 @@ const MealPlanner = () => {
       title: "Week 1",
       meals: {
         Monday: "Bolognese pancakes or pasta",
-        Tuesday: "Miriam's curry",
+        Tuesday: "Miriam&apos;s curry",
         Wednesday: "Chicken souvlaki",
         Thursday: "Broccoli / pumpkin soup and toast",
         Friday: "Take away",
@@ -211,7 +211,7 @@ const MealPlanner = () => {
     week4: {
       title: "Week 4",
       meals: {
-        Monday: "Shepherd's pie",
+        Monday: "Shepherd&apos;s pie",
         Tuesday: "Minestrone soup",
         Wednesday: "Chicken schnitzel and 3 veg",
         Thursday: "Carbonara pasta",
