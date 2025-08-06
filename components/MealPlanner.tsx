@@ -2,28 +2,42 @@
 import React, { useState } from 'react';
 import { Calendar, ShoppingCart, ChefHat } from 'lucide-react';
 
+interface Week {
+  title: string;
+  meals: {
+    Monday: string;
+    Tuesday: string;
+    Wednesday: string;
+    Thursday: string;
+    Friday: string;
+    Saturday: string;
+    Sunday: string;
+  };
+  ingredients: string[];
+}
+
 const MealPlanner = () => {
-  const [selectedWeek, setSelectedWeek] = useState(null);
-  const [checkedItems, setCheckedItems] = useState({});
+  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
   const [showSaturdayMeals, setShowSaturdayMeals] = useState(false);
   const [showStaples, setShowStaples] = useState(false);
-  const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState(null);
+  const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState<string | null>(null);
   
   // Initialize staples as all checked
-  const [staplesChecked, setStaplesChecked] = useState(() => {
+  const [staplesChecked, setStaplesChecked] = useState<{ [key: string]: boolean }>(() => {
     const staples = [
       "🥛 Milk", "🥚 Eggs", "🍦 Yogurt", "🧀 Cheese", "🍶 Sour Cream", "🧈 Butter", "🌾 Flour", 
       "🧄 Garlic", "🍚 Rice", "🫘 Lentils", "🥕 Vegetables - Potatoes, Carrots, Onion", 
       "🍅 Tomato Cans", "🫛 Chickpeas", "🫘 Beans", "🌮 Tortillas"
     ];
-    const initialState = { [key: string]: boolean } = {};
+    const initialState: { [key: string]: boolean } = {};
     staples.forEach(item => {
       initialState[`staples-${item}`] = true;
     });
     return initialState;
   });
 
-  const saturdayMeals = {
+  const saturdayMeals: { [key: string]: string[] } = {
     "Make at home Sushi": ["Sushi rice", "Nori sheets", "Soy sauce", "Wasabi", "Pickled ginger", "Cucumber", "Avocado", "Smoked salmon", "Tuna", "Crab sticks"],
     "Make at home pizzas": ["Pizza dough/bases", "Tomato paste", "Mozzarella cheese", "Pepperoni", "Mushrooms", "Capsicum", "Olives", "Basil"],
     "Lasagna with wedges": ["Lasagna sheets", "Ground beef/mince", "Bechamel sauce", "Mozzarella cheese", "Parmesan cheese", "Potatoes", "Olive oil"],
@@ -66,7 +80,7 @@ const MealPlanner = () => {
     "🌮 Tortillas"
   ];
 
-  const toggleIngredient = (weekKey, ingredient) => {
+  const toggleIngredient = (weekKey: string, ingredient: string) => {
     const key = `${weekKey}-${ingredient}`;
     setCheckedItems(prev => ({
       ...prev,
@@ -74,7 +88,7 @@ const MealPlanner = () => {
     }));
   };
 
-  const toggleStaple = (item) => {
+  const toggleStaple = (item: string) => {
     const key = `staples-${item}`;
     setStaplesChecked(prev => ({
       ...prev,
@@ -82,7 +96,7 @@ const MealPlanner = () => {
     }));
   };
 
-  const getSortedIngredients = (weekKey, ingredients) => {
+  const getSortedIngredients = (weekKey: string, ingredients: string[]) => {
     const sortedIngredients = [...ingredients].sort((a, b) => {
       const aKey = `${weekKey}-${a}`;
       const bKey = `${weekKey}-${b}`;
@@ -243,7 +257,7 @@ const MealPlanner = () => {
     }
   };
 
-  const WeekCard = ({ weekKey, week }) => (
+  const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
         <Calendar className="mr-2 text-blue-600" size={20} />
@@ -251,14 +265,15 @@ const MealPlanner = () => {
       </h3>
       
       <div className="space-y-2 mb-4">
-        {Object.entries(week.meals).map(([day, meal]) => (
-          meal && (
+        {Object.entries(week.meals).map(([day, meal]) => {
+          const mealStr = meal as string;
+          return mealStr && (
             <div key={day} className="flex">
               <span className="font-medium text-gray-600 w-20">{day.slice(0, 3)}:</span>
-              <span className="text-gray-800">{meal}</span>
+              <span className="text-gray-800">{mealStr}</span>
             </div>
-          )
-        ))}
+          );
+        })}
       </div>
       
       <button
@@ -362,7 +377,7 @@ const MealPlanner = () => {
                 Ingredients for {selectedSaturdayMeal}:
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                {saturdayMeals[selectedSaturdayMeal].map((ingredient, index) => {
+                {selectedSaturdayMeal && saturdayMeals[selectedSaturdayMeal]?.map((ingredient, index) => {
                   const itemKey = `saturday-${selectedSaturdayMeal}-${ingredient}`;
                   const isChecked = checkedItems[itemKey];
                   
