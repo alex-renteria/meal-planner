@@ -404,7 +404,7 @@ const MealPlanner = () => {
             Staples Check List
           </h3>
           <p className="text-gray-600 mb-4 text-sm">
-            Keep these ticked when you have them. Untick when you run out - they'll move to the top.
+            Keep these ticked when you have them. Untick when you run out - they will move to the top.
           </p>
           
           <button
