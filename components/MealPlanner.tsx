@@ -16,7 +16,7 @@ const MealPlanner = () => {
       "🧄 Garlic", "🍚 Rice", "🫘 Lentils", "🥕 Vegetables - Potatoes, Carrots, Onion", 
       "🍅 Tomato Cans", "🫛 Chickpeas", "🫘 Beans", "🌮 Tortillas"
     ];
-    const initialState = {};
+    const initialState = { [key: string]: boolean } = {};
     staples.forEach(item => {
       initialState[`staples-${item}`] = true;
     });
