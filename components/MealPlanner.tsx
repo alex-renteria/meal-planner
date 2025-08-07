@@ -123,6 +123,19 @@ const MealPlanner = () => {
     });
   };
 
+  const getSortedSaturdayIngredients = (mealName: string, ingredients: string[]) => {
+    return [...ingredients].sort((a, b) => {
+      const aKey = `saturday-${mealName}-${a}`;
+      const bKey = `saturday-${mealName}-${b}`;
+      const aChecked = checkedItems[aKey];
+      const bChecked = checkedItems[bKey];
+      
+      if (aChecked && !bChecked) return 1;
+      if (!aChecked && bChecked) return -1;
+      return 0;
+    });
+  };
+
   const mealPlan = {
     week1: {
       title: "Week 1",
@@ -377,7 +390,7 @@ const MealPlanner = () => {
                 Ingredients for {selectedSaturdayMeal}:
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                {selectedSaturdayMeal && saturdayMeals[selectedSaturdayMeal]?.map((ingredient, index) => {
+                {selectedSaturdayMeal && getSortedSaturdayIngredients(selectedSaturdayMeal, saturdayMeals[selectedSaturdayMeal] || []).map((ingredient, index) => {
                   const itemKey = `saturday-${selectedSaturdayMeal}-${ingredient}`;
                   const isChecked = checkedItems[itemKey];
                   
