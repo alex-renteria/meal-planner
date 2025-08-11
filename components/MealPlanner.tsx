@@ -1,6 +1,6 @@
 'use client';
-import React, { useState } from 'react';
-import { Calendar, ShoppingCart, ChefHat } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, ShoppingCart, ChefHat, RotateCcw } from 'lucide-react';
 
 interface Week {
   title: string;
@@ -17,14 +17,35 @@ interface Week {
 }
 
 const MealPlanner = () => {
-  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
-  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>({});
-  const [showSaturdayMeals, setShowSaturdayMeals] = useState(false);
-  const [showStaples, setShowStaples] = useState(false);
-  const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState<string | null>(null);
+  // Load saved data from localStorage
+  const loadSavedData = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('mealPlannerData');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (error) {
+          console.error('Error loading saved data:', error);
+        }
+      }
+    }
+    return null;
+  };
+
+  const savedData = loadSavedData();
   
-  // Initialize staples as all checked
+  const [selectedWeek, setSelectedWeek] = useState<string | null>(savedData?.selectedWeek || null);
+  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(savedData?.checkedItems || {});
+  const [showSaturdayMeals, setShowSaturdayMeals] = useState(savedData?.showSaturdayMeals || false);
+  const [showStaples, setShowStaples] = useState(savedData?.showStaples || false);
+  const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState<string | null>(savedData?.selectedSaturdayMeal || null);
+  
+  // Initialize staples as all checked (or from saved data)
   const [staplesChecked, setStaplesChecked] = useState<{ [key: string]: boolean }>(() => {
+    if (savedData?.staplesChecked) {
+      return savedData.staplesChecked;
+    }
+    
     const staples = [
       "🥛 Milk", "🥚 Eggs", "🍦 Yogurt", "🧀 Cheese", "🍶 Sour Cream", "🧈 Butter", "🌾 Flour", 
       "🧄 Garlic", "🍚 Rice", "🫘 Lentils", "🥕 Vegetables - Potatoes, Carrots, Onion", 
@@ -79,6 +100,42 @@ const MealPlanner = () => {
     "🫘 Beans", 
     "🌮 Tortillas"
   ];
+
+  // Save data to localStorage whenever state changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const dataToSave = {
+        selectedWeek,
+        checkedItems,
+        showSaturdayMeals,
+        showStaples,
+        selectedSaturdayMeal,
+        staplesChecked
+      };
+      localStorage.setItem('mealPlannerData', JSON.stringify(dataToSave));
+    }
+  }, [selectedWeek, checkedItems, showSaturdayMeals, showStaples, selectedSaturdayMeal, staplesChecked]);
+
+  // Function to clear all saved data
+  const clearAllData = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('mealPlannerData');
+      
+      // Reset all states to default
+      setSelectedWeek(null);
+      setCheckedItems({});
+      setShowSaturdayMeals(false);
+      setShowStaples(false);
+      setSelectedSaturdayMeal(null);
+      
+      // Reset staples to all checked
+      const initialStaples: { [key: string]: boolean } = {};
+      staplesList.forEach(item => {
+        initialStaples[`staples-${item}`] = true;
+      });
+      setStaplesChecked(initialStaples);
+    }
+  };
 
   const toggleIngredient = (weekKey: string, ingredient: string) => {
     const key = `${weekKey}-${ingredient}`;
@@ -342,7 +399,14 @@ const MealPlanner = () => {
             <ChefHat className="mr-3 text-blue-600" size={40} />
             4-Week Meal Planner
           </h1>
-          <p className="text-gray-600">Click on any week to see your Woolworths shopping list</p>
+          <p className="text-gray-600 mb-4">Click on any week to see your Woolworths shopping list</p>
+          <button
+            onClick={clearAllData}
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center mx-auto text-sm"
+          >
+            <RotateCcw className="mr-2" size={16} />
+            Reset All Data
+          </button>
         </header>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
