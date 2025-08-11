@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Calendar, ShoppingCart, ChefHat, RotateCcw } from 'lucide-react';
 
 interface Week {
@@ -193,7 +193,7 @@ const MealPlanner = () => {
     });
   };
 
-  const mealPlan = {
+  const mealPlan = useMemo(() => ({
     week1: {
       title: "Week 1",
       meals: {
@@ -325,6 +325,31 @@ const MealPlanner = () => {
         "Avocado"
       ]
     }
+  }), []);
+
+  // Meal-specific ingredients mapping
+  const mealIngredients: { [key: string]: string[] } = {
+    "Bolognese pancakes or pasta": ["Ground beef/mince", "Pasta or pancake mix", "Onions", "Garlic", "Canned tomatoes", "Tomato paste"],
+    "Miriam's curry": ["Curry powder/paste", "Coconut milk", "Rice", "Onions", "Garlic"],
+    "Chicken souvlaki": ["Chicken breast/thighs", "Greek yogurt", "Cucumber", "Pita bread"],
+    "Broccoli / pumpkin soup and toast": ["Broccoli", "Pumpkin", "Vegetable stock", "Bread"],
+    "Take away": [],
+    "Lamb roast": ["Lamb leg/shoulder", "Potatoes", "Fresh herbs (rosemary, thyme)", "Carrots"],
+    "Chilli con carne": ["Ground beef/mince", "Kidney beans", "Chilli powder", "Cumin", "Capsicum", "Onions", "Canned tomatoes"],
+    "Butter chicken": ["Chicken breast/thighs", "Butter chicken sauce", "Basmati rice"],
+    "Lentils soup": ["Red lentils", "Vegetable stock", "Onions", "Garlic", "Carrots"],
+    "Stir fry noodles": ["Egg noodles", "Asian vegetables (bok choy, snow peas)", "Soy sauce", "Sesame oil", "Garlic"],
+    "Mexican carne asada": ["Beef steak", "Lime", "Coriander", "Corn tortillas", "Onions"],
+    "Mexican meatballs": ["Ground beef/mince", "Mexican seasoning", "Onions", "Garlic"],
+    "Pesto ravioli": ["Fresh ravioli", "Pesto sauce", "Parmesan cheese"],
+    "Pork and 3 veg": ["Pork chops/loin", "Mixed vegetables", "Potatoes"],
+    "Chicken soup": ["Chicken breast/thighs", "Chicken stock", "Noodles", "Carrots", "Celery"],
+    "Fried rice or doula ginger rice and dumplings": ["Jasmine rice", "Eggs", "Mixed vegetables for fried rice", "Frozen dumplings", "Fresh ginger", "Spring onions"],
+    "Shepherd's pie": ["Ground lamb/beef", "Potatoes", "Frozen peas", "Carrots", "Onions"],
+    "Minestrone soup": ["Mixed vegetables", "Canned tomatoes", "Vegetable stock", "Pasta (small shapes)"],
+    "Chicken schnitzel and 3 veg": ["Chicken breast", "Breadcrumbs", "Eggs", "Mixed vegetables"],
+    "Carbonara pasta": ["Pasta (spaghetti/fettuccine)", "Bacon", "Cream", "Parmesan cheese", "Eggs"],
+    "Pulled pork tacos": ["Pork shoulder", "BBQ sauce", "Soft taco shells", "Coleslaw mix", "Avocado"]
   };
 
   // Calculate current week and day (client-side only to avoid hydration mismatch)
@@ -332,9 +357,11 @@ const MealPlanner = () => {
     weekNumber: number;
     currentDay: string;
     todaysMeal: string;
+    todaysIngredients: string[];
     tomorrowWeekNumber: number;
     tomorrowDay: string;
     tomorrowsMeal: string;
+    tomorrowsIngredients: string[];
   } | null>(null);
 
   useEffect(() => {
@@ -351,6 +378,7 @@ const MealPlanner = () => {
     const currentDay = dayNames[today.getDay()];
     const todayWeekKey = `week${todayWeekNumber}`;
     const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+    const todaysIngredients = mealIngredients[todaysMeal] || [];
     
     // Tomorrow's calculation
     const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -358,14 +386,17 @@ const MealPlanner = () => {
     const tomorrowDay = dayNames[tomorrow.getDay()];
     const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
     const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+    const tomorrowsIngredients = mealIngredients[tomorrowsMeal] || [];
     
     setCurrentWeekData({ 
       weekNumber: todayWeekNumber, 
       currentDay, 
       todaysMeal,
+      todaysIngredients,
       tomorrowWeekNumber,
       tomorrowDay,
-      tomorrowsMeal
+      tomorrowsMeal,
+      tomorrowsIngredients
     });
   }, [mealPlan]);
 
@@ -464,9 +495,20 @@ const MealPlanner = () => {
                     <p className="text-sm text-gray-600 mb-1">
                       {currentWeekData.currentDay} - Week {currentWeekData.weekNumber}
                     </p>
-                    <p className="text-lg font-semibold text-gray-800">
+                    <p className="text-lg font-semibold text-gray-800 mb-3">
                       {currentWeekData.todaysMeal}
                     </p>
+                    <div className="text-center">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Ingredients:</h4>
+                      <ul className="text-xs text-gray-600 space-y-1 max-h-32 overflow-y-auto">
+                        {currentWeekData.todaysIngredients.map((ingredient, index) => (
+                          <li key={index} className="flex items-start justify-center">
+                            <span className="mr-2">•</span>
+                            <span>{ingredient}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </>
                 ) : (
                   <p className="text-gray-500">Loading...</p>
@@ -486,9 +528,20 @@ const MealPlanner = () => {
                     <p className="text-sm text-gray-600 mb-1">
                       {currentWeekData.tomorrowDay} - Week {currentWeekData.tomorrowWeekNumber}
                     </p>
-                    <p className="text-lg font-semibold text-gray-800">
+                    <p className="text-lg font-semibold text-gray-800 mb-3">
                       {currentWeekData.tomorrowsMeal}
                     </p>
+                    <div className="text-center">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Ingredients:</h4>
+                      <ul className="text-xs text-gray-600 space-y-1 max-h-32 overflow-y-auto">
+                        {currentWeekData.tomorrowsIngredients.map((ingredient, index) => (
+                          <li key={index} className="flex items-start justify-center">
+                            <span className="mr-2">•</span>
+                            <span>{ingredient}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </>
                 ) : (
                   <p className="text-gray-500">Loading...</p>
