@@ -327,6 +327,48 @@ const MealPlanner = () => {
     }
   };
 
+  // Calculate current week and day (client-side only to avoid hydration mismatch)
+  const [currentWeekData, setCurrentWeekData] = useState<{
+    weekNumber: number;
+    currentDay: string;
+    todaysMeal: string;
+    tomorrowWeekNumber: number;
+    tomorrowDay: string;
+    tomorrowsMeal: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    // Today's calculation
+    const todayDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const todayWeekNumber = Math.floor(todayDiff / 7) % 4 + 1;
+    const currentDay = dayNames[today.getDay()];
+    const todayWeekKey = `week${todayWeekNumber}`;
+    const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+    
+    // Tomorrow's calculation
+    const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const tomorrowWeekNumber = Math.floor(tomorrowDiff / 7) % 4 + 1;
+    const tomorrowDay = dayNames[tomorrow.getDay()];
+    const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
+    const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+    
+    setCurrentWeekData({ 
+      weekNumber: todayWeekNumber, 
+      currentDay, 
+      todaysMeal,
+      tomorrowWeekNumber,
+      tomorrowDay,
+      tomorrowsMeal
+    });
+  }, []);
+
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
       <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
@@ -407,6 +449,53 @@ const MealPlanner = () => {
             <RotateCcw className="mr-2" size={16} />
             Reset All Data
           </button>
+          
+          {/* Today's and Tomorrow's Menu Section */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            {/* Today's Menu */}
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+                <Calendar className="mr-2 text-green-600" size={20} />
+                Today's Menu
+              </h3>
+              <div className="text-center">
+                {currentWeekData ? (
+                  <>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {currentWeekData.currentDay} - Week {currentWeekData.weekNumber}
+                    </p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {currentWeekData.todaysMeal}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-gray-500">Loading...</p>
+                )}
+              </div>
+            </div>
+
+            {/* Tomorrow's Menu */}
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+                <Calendar className="mr-2 text-green-600" size={20} />
+                Tomorrow's Menu
+              </h3>
+              <div className="text-center">
+                {currentWeekData ? (
+                  <>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {currentWeekData.tomorrowDay} - Week {currentWeekData.tomorrowWeekNumber}
+                    </p>
+                    <p className="text-lg font-semibold text-gray-800">
+                      {currentWeekData.tomorrowsMeal}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-gray-500">Loading...</p>
+                )}
+              </div>
+            </div>
+          </div>
         </header>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
