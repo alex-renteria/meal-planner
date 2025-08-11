@@ -367,7 +367,7 @@ const MealPlanner = () => {
       tomorrowDay,
       tomorrowsMeal
     });
-  }, []);
+  }, [mealPlan]);
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
@@ -456,7 +456,7 @@ const MealPlanner = () => {
             <div className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
                 <Calendar className="mr-2 text-green-600" size={20} />
-                Today's Menu
+                Today&apos;s Menu
               </h3>
               <div className="text-center">
                 {currentWeekData ? (
@@ -478,7 +478,7 @@ const MealPlanner = () => {
             <div className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
                 <Calendar className="mr-2 text-green-600" size={20} />
-                Tomorrow's Menu
+                Tomorrow&apos;s Menu
               </h3>
               <div className="text-center">
                 {currentWeekData ? (
