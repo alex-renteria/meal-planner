@@ -39,6 +39,8 @@ const MealPlanner = () => {
   const [showSaturdayMeals, setShowSaturdayMeals] = useState(savedData?.showSaturdayMeals || false);
   const [showStaples, setShowStaples] = useState(savedData?.showStaples || false);
   const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState<string | null>(savedData?.selectedSaturdayMeal || null);
+  const [showTodaysCooking, setShowTodaysCooking] = useState(false);
+  const [showTomorrowsCooking, setShowTomorrowsCooking] = useState(false);
   
   // Initialize staples as all checked (or from saved data)
   const [staplesChecked, setStaplesChecked] = useState<{ [key: string]: boolean }>(() => {
@@ -352,52 +354,251 @@ const MealPlanner = () => {
     "Pulled pork tacos": ["Pork shoulder", "BBQ sauce", "Soft taco shells", "Coleslaw mix", "Avocado"]
   };
 
+  // Cooking methods with ingredients and instructions
+  const cookingMethods: { [key: string]: { ingredients: string[]; instructions: string[] } } = {
+    "Bolognese pancakes or pasta": {
+      ingredients: ["500g ground beef/mince", "1 large onion, diced", "2 cloves garlic, minced", "400g can tomatoes", "2 tbsp tomato paste", "500g pasta or pancake mix"],
+      instructions: [
+        "Heat oil in a large pan over medium heat",
+        "Cook onion and garlic until softened, about 3 minutes",
+        "Add mince and cook until browned, breaking up lumps",
+        "Stir in tomato paste and cook for 1 minute",
+        "Add canned tomatoes, simmer for 20 minutes",
+        "Season with salt and pepper. Serve with pasta or make pancakes"
+      ]
+    },
+    "Miriam's curry": {
+      ingredients: ["2 tbsp curry powder/paste", "400ml coconut milk", "1 cup basmati rice", "1 large onion, diced", "2 cloves garlic, minced"],
+      instructions: [
+        "Cook rice according to package instructions",
+        "Heat oil in a large pan, cook onion until soft",
+        "Add garlic and curry paste, cook for 1 minute",
+        "Pour in coconut milk, bring to a gentle simmer",
+        "Simmer for 15 minutes until thickened",
+        "Serve over rice"
+      ]
+    },
+    "Chicken souvlaki": {
+      ingredients: ["600g chicken breast/thighs, cubed", "200g Greek yogurt", "1 cucumber, diced", "4 pita breads"],
+      instructions: [
+        "Marinate chicken in half the yogurt for 30 minutes",
+        "Thread chicken onto skewers",
+        "Grill or pan-fry for 12-15 minutes until cooked through",
+        "Mix remaining yogurt with cucumber for tzatziki",
+        "Warm pita bread and serve with chicken and tzatziki"
+      ]
+    },
+    "Broccoli / pumpkin soup and toast": {
+      ingredients: ["500g broccoli or pumpkin, chopped", "1L vegetable stock", "4 slices bread"],
+      instructions: [
+        "Boil vegetables in stock for 15-20 minutes until tender",
+        "Blend soup until smooth (use stick blender or food processor)",
+        "Season with salt and pepper",
+        "Toast bread and serve alongside soup"
+      ]
+    },
+    "Lamb roast": {
+      ingredients: ["1.5kg lamb leg/shoulder", "1kg potatoes, quartered", "2 sprigs fresh rosemary", "3 carrots, chopped"],
+      instructions: [
+        "Preheat oven to 200°C",
+        "Season lamb with salt, pepper and rosemary",
+        "Roast for 20 minutes per 500g plus 20 minutes extra",
+        "Add potatoes and carrots around lamb for last 45 minutes",
+        "Rest meat for 10 minutes before carving"
+      ]
+    },
+    "Chilli con carne": {
+      ingredients: ["500g ground beef/mince", "400g kidney beans", "1 tsp chilli powder", "1 tsp cumin", "1 capsicum, diced", "1 onion, diced", "400g can tomatoes"],
+      instructions: [
+        "Cook onion and capsicum until soft",
+        "Add mince, cook until browned",
+        "Stir in spices and cook for 1 minute",
+        "Add tomatoes and beans, bring to boil",
+        "Simmer for 30 minutes, stirring occasionally",
+        "Serve with rice or bread"
+      ]
+    },
+    "Butter chicken": {
+      ingredients: ["600g chicken breast/thighs, cubed", "400g jar butter chicken sauce", "1 cup basmati rice"],
+      instructions: [
+        "Cook rice according to package instructions",
+        "Heat oil in large pan, cook chicken until golden",
+        "Add butter chicken sauce to pan",
+        "Simmer for 15 minutes until chicken is cooked through",
+        "Serve over rice"
+      ]
+    },
+    "Take away": {
+      ingredients: [],
+      instructions: ["Order from your favorite restaurant!", "Enjoy without cooking!"]
+    },
+    "Lentils soup": {
+      ingredients: ["1 cup red lentils", "1L vegetable stock", "1 onion, diced", "2 cloves garlic, minced", "2 carrots, diced"],
+      instructions: [
+        "Heat oil in large pot, cook onion until soft",
+        "Add garlic and carrots, cook for 2 minutes",
+        "Add lentils and stock, bring to boil",
+        "Simmer for 20-25 minutes until lentils are tender",
+        "Season and serve hot"
+      ]
+    },
+    "Stir fry noodles": {
+      ingredients: ["300g egg noodles", "300g Asian vegetables (bok choy, snow peas)", "2 tbsp soy sauce", "1 tsp sesame oil", "2 cloves garlic, minced"],
+      instructions: [
+        "Cook noodles according to package instructions, drain",
+        "Heat oil in wok or large pan over high heat",
+        "Add garlic, cook for 30 seconds",
+        "Add vegetables, stir-fry for 3-4 minutes",
+        "Add noodles, soy sauce and sesame oil, toss to combine"
+      ]
+    },
+    "Mexican carne asada": {
+      ingredients: ["600g beef steak", "2 limes, juiced", "1/4 cup coriander, chopped", "8 corn tortillas", "1 onion, sliced"],
+      instructions: [
+        "Marinate steak in lime juice for 30 minutes",
+        "Grill or pan-fry steak for 4-6 minutes each side",
+        "Rest meat for 5 minutes, then slice thinly",
+        "Warm tortillas, serve with meat, onion and coriander"
+      ]
+    },
+    "Mexican meatballs": {
+      ingredients: ["500g ground beef/mince", "2 tsp Mexican seasoning", "1 onion, diced", "2 cloves garlic, minced"],
+      instructions: [
+        "Mix mince with seasoning, form into meatballs",
+        "Heat oil in pan, brown meatballs all over",
+        "Add onion and garlic, cook until soft",
+        "Simmer with a little water for 15 minutes until cooked through"
+      ]
+    },
+    "Pesto ravioli": {
+      ingredients: ["500g fresh ravioli", "1/2 cup pesto sauce", "1/4 cup Parmesan cheese, grated"],
+      instructions: [
+        "Cook ravioli according to package instructions",
+        "Drain and return to pot",
+        "Gently toss with pesto sauce",
+        "Serve immediately with Parmesan cheese"
+      ]
+    },
+    "Pork and 3 veg": {
+      ingredients: ["4 pork chops/loin steaks", "500g mixed vegetables", "500g potatoes"],
+      instructions: [
+        "Season pork with salt and pepper",
+        "Heat oil in pan, cook pork for 4-5 minutes each side",
+        "Steam or boil vegetables and potatoes until tender",
+        "Serve pork with vegetables and potatoes"
+      ]
+    },
+    "Chicken soup": {
+      ingredients: ["400g chicken breast/thighs", "1L chicken stock", "200g noodles", "2 carrots, sliced", "2 celery stalks, sliced"],
+      instructions: [
+        "Simmer chicken in stock for 20 minutes until cooked",
+        "Remove chicken, shred when cool enough to handle",
+        "Add vegetables to stock, simmer for 10 minutes",
+        "Add noodles and shredded chicken, cook until noodles are tender"
+      ]
+    },
+    "Fried rice or doula ginger rice and dumplings": {
+      ingredients: ["2 cups cooked jasmine rice", "3 eggs, beaten", "300g mixed vegetables", "12 frozen dumplings", "2 tbsp fresh ginger, minced", "4 spring onions, sliced"],
+      instructions: [
+        "Steam dumplings according to package instructions",
+        "Heat oil in wok, scramble eggs and set aside",
+        "Stir-fry vegetables and ginger for 3 minutes",
+        "Add rice, breaking up clumps, stir-fry for 5 minutes",
+        "Add eggs and spring onions, serve with dumplings"
+      ]
+    },
+    "Shepherd's pie": {
+      ingredients: ["500g ground lamb/beef", "1kg potatoes", "1 cup frozen peas", "2 carrots, diced", "1 onion, diced"],
+      instructions: [
+        "Boil potatoes until tender, mash with butter",
+        "Cook onion and carrots until soft",
+        "Add mince, cook until browned",
+        "Add peas, season and place in baking dish",
+        "Top with mashed potato, bake at 200°C for 25 minutes"
+      ]
+    },
+    "Minestrone soup": {
+      ingredients: ["400g mixed vegetables", "400g can tomatoes", "1L vegetable stock", "100g small pasta shapes"],
+      instructions: [
+        "Heat oil in large pot, cook vegetables for 5 minutes",
+        "Add tomatoes and stock, bring to boil",
+        "Add pasta, simmer for 12-15 minutes until tender",
+        "Season with salt and pepper"
+      ]
+    },
+    "Chicken schnitzel and 3 veg": {
+      ingredients: ["4 chicken breasts", "1 cup breadcrumbs", "2 eggs, beaten", "500g mixed vegetables"],
+      instructions: [
+        "Pound chicken to 1cm thickness",
+        "Dip in egg, then coat with breadcrumbs",
+        "Fry in oil for 4-5 minutes each side until golden",
+        "Steam vegetables until tender, serve with schnitzel"
+      ]
+    },
+    "Carbonara pasta": {
+      ingredients: ["400g spaghetti/fettuccine", "200g bacon, diced", "300ml cream", "1/2 cup Parmesan cheese", "2 eggs"],
+      instructions: [
+        "Cook pasta according to package instructions",
+        "Cook bacon until crispy",
+        "Beat eggs with Parmesan cheese",
+        "Drain pasta, add bacon and cream, toss",
+        "Remove from heat, add egg mixture, toss quickly"
+      ]
+    },
+    "Pulled pork tacos": {
+      ingredients: ["1kg pork shoulder", "1/2 cup BBQ sauce", "8 soft taco shells", "300g coleslaw mix", "1 avocado, sliced"],
+      instructions: [
+        "Slow cook pork shoulder for 6-8 hours until tender",
+        "Shred pork and mix with BBQ sauce",
+        "Warm taco shells",
+        "Fill with pork, coleslaw and avocado"
+      ]
+    }
+  };
+
   // Calculate current week and day (client-side only to avoid hydration mismatch)
   const [currentWeekData, setCurrentWeekData] = useState<{
     weekNumber: number;
     currentDay: string;
     todaysMeal: string;
-    todaysIngredients: string[];
     tomorrowWeekNumber: number;
     tomorrowDay: string;
     tomorrowsMeal: string;
-    tomorrowsIngredients: string[];
   } | null>(null);
 
   useEffect(() => {
-    const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    
-    // Today's calculation
-    const todayDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const todayWeekNumber = Math.floor(todayDiff / 7) % 4 + 1;
-    const currentDay = dayNames[today.getDay()];
-    const todayWeekKey = `week${todayWeekNumber}`;
-    const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
-    const todaysIngredients = mealIngredients[todaysMeal] || [];
-    
-    // Tomorrow's calculation
-    const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const tomorrowWeekNumber = Math.floor(tomorrowDiff / 7) % 4 + 1;
-    const tomorrowDay = dayNames[tomorrow.getDay()];
-    const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
-    const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
-    const tomorrowsIngredients = mealIngredients[tomorrowsMeal] || [];
-    
-    setCurrentWeekData({ 
-      weekNumber: todayWeekNumber, 
-      currentDay, 
-      todaysMeal,
-      todaysIngredients,
-      tomorrowWeekNumber,
-      tomorrowDay,
-      tomorrowsMeal,
-      tomorrowsIngredients
-    });
+    // Only run on client side to prevent hydration mismatch
+    if (typeof window !== 'undefined') {
+      const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      
+      // Today's calculation
+      const todayDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const todayWeekNumber = Math.floor(todayDiff / 7) % 4 + 1;
+      const currentDay = dayNames[today.getDay()];
+      const todayWeekKey = `week${todayWeekNumber}`;
+      const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+      
+      // Tomorrow's calculation
+      const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const tomorrowWeekNumber = Math.floor(tomorrowDiff / 7) % 4 + 1;
+      const tomorrowDay = dayNames[tomorrow.getDay()];
+      const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
+      const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+      
+      setCurrentWeekData({ 
+        weekNumber: todayWeekNumber, 
+        currentDay, 
+        todaysMeal,
+        tomorrowWeekNumber,
+        tomorrowDay,
+        tomorrowsMeal
+      });
+    }
   }, [mealPlan]);
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
@@ -495,20 +696,45 @@ const MealPlanner = () => {
                     <p className="text-sm text-gray-600 mb-1">
                       {currentWeekData.currentDay} - Week {currentWeekData.weekNumber}
                     </p>
-                    <p className="text-lg font-semibold text-gray-800 mb-3">
+                    <p className="text-lg font-semibold text-gray-800 mb-4">
                       {currentWeekData.todaysMeal}
                     </p>
-                    <div className="text-center">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Ingredients:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1 max-h-32 overflow-y-auto">
-                        {currentWeekData.todaysIngredients.map((ingredient, index) => (
-                          <li key={index} className="flex items-start justify-center">
-                            <span className="mr-2">•</span>
-                            <span>{ingredient}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <button
+                      onClick={() => setShowTodaysCooking(!showTodaysCooking)}
+                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
+                    >
+                      <ChefHat className="mr-2" size={14} />
+                      {showTodaysCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
+                    </button>
+                    {showTodaysCooking && cookingMethods[currentWeekData.todaysMeal] && (
+                      <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
+                        <h4 className="font-bold text-green-800 mb-3 text-center">
+                          How to cook {currentWeekData.todaysMeal}
+                        </h4>
+                        <div className="mb-3">
+                          <h5 className="font-semibold text-green-700 mb-2">Ingredients:</h5>
+                          <ul className="text-xs text-green-600 space-y-1">
+                            {cookingMethods[currentWeekData.todaysMeal].ingredients.map((ingredient, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>{ingredient}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-green-700 mb-2">Instructions:</h5>
+                          <ol className="text-xs text-green-600 space-y-1">
+                            {cookingMethods[currentWeekData.todaysMeal].instructions.map((step, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="mr-2 font-semibold">{index + 1}.</span>
+                                <span>{step}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <p className="text-gray-500">Loading...</p>
@@ -528,20 +754,45 @@ const MealPlanner = () => {
                     <p className="text-sm text-gray-600 mb-1">
                       {currentWeekData.tomorrowDay} - Week {currentWeekData.tomorrowWeekNumber}
                     </p>
-                    <p className="text-lg font-semibold text-gray-800 mb-3">
+                    <p className="text-lg font-semibold text-gray-800 mb-4">
                       {currentWeekData.tomorrowsMeal}
                     </p>
-                    <div className="text-center">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Ingredients:</h4>
-                      <ul className="text-xs text-gray-600 space-y-1 max-h-32 overflow-y-auto">
-                        {currentWeekData.tomorrowsIngredients.map((ingredient, index) => (
-                          <li key={index} className="flex items-start justify-center">
-                            <span className="mr-2">•</span>
-                            <span>{ingredient}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <button
+                      onClick={() => setShowTomorrowsCooking(!showTomorrowsCooking)}
+                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
+                    >
+                      <ChefHat className="mr-2" size={14} />
+                      {showTomorrowsCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
+                    </button>
+                    {showTomorrowsCooking && cookingMethods[currentWeekData.tomorrowsMeal] && (
+                      <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
+                        <h4 className="font-bold text-green-800 mb-3 text-center">
+                          How to cook {currentWeekData.tomorrowsMeal}
+                        </h4>
+                        <div className="mb-3">
+                          <h5 className="font-semibold text-green-700 mb-2">Ingredients:</h5>
+                          <ul className="text-xs text-green-600 space-y-1">
+                            {cookingMethods[currentWeekData.tomorrowsMeal].ingredients.map((ingredient, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="mr-2">•</span>
+                                <span>{ingredient}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h5 className="font-semibold text-green-700 mb-2">Instructions:</h5>
+                          <ol className="text-xs text-green-600 space-y-1">
+                            {cookingMethods[currentWeekData.tomorrowsMeal].instructions.map((step, index) => (
+                              <li key={index} className="flex items-start">
+                                <span className="mr-2 font-semibold">{index + 1}.</span>
+                                <span>{step}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <p className="text-gray-500">Loading...</p>
