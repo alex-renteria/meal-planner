@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, ShoppingCart, ChefHat, RotateCcw } from 'lucide-react';
+import { Calendar, ShoppingCart, ChefHat, RotateCcw, Zap } from 'lucide-react';
+import EmergencyMealCreator from './EmergencyMealCreator';
 
 interface Week {
   title: string;
@@ -41,6 +42,7 @@ const MealPlanner = () => {
   const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState<string | null>(savedData?.selectedSaturdayMeal || null);
   const [showTodaysCooking, setShowTodaysCooking] = useState(false);
   const [showTomorrowsCooking, setShowTomorrowsCooking] = useState(false);
+  const [showEmergencyMealCreator, setShowEmergencyMealCreator] = useState(false);
   
   // Initialize staples as all checked (or from saved data)
   const [staplesChecked, setStaplesChecked] = useState<{ [key: string]: boolean }>(() => {
@@ -329,7 +331,8 @@ const MealPlanner = () => {
     }
   }), []);
 
-  // Meal-specific ingredients mapping
+  // Meal-specific ingredients mapping (currently unused but kept for potential future use)
+  /*
   const mealIngredients: { [key: string]: string[] } = {
     "Bolognese pancakes or pasta": ["Ground beef/mince", "Pasta or pancake mix", "Onions", "Garlic", "Canned tomatoes", "Tomato paste"],
     "Miriam's curry": ["Curry powder/paste", "Coconut milk", "Rice", "Onions", "Garlic"],
@@ -353,6 +356,7 @@ const MealPlanner = () => {
     "Carbonara pasta": ["Pasta (spaghetti/fettuccine)", "Bacon", "Cream", "Parmesan cheese", "Eggs"],
     "Pulled pork tacos": ["Pork shoulder", "BBQ sauce", "Soft taco shells", "Coleslaw mix", "Avocado"]
   };
+  */
 
   // Cooking methods with ingredients and instructions
   const cookingMethods: { [key: string]: { ingredients: string[]; instructions: string[] } } = {
@@ -569,35 +573,47 @@ const MealPlanner = () => {
   useEffect(() => {
     // Only run on client side to prevent hydration mismatch
     if (typeof window !== 'undefined') {
-      const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      
-      // Today's calculation
-      const todayDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      const todayWeekNumber = Math.floor(todayDiff / 7) % 4 + 1;
-      const currentDay = dayNames[today.getDay()];
-      const todayWeekKey = `week${todayWeekNumber}`;
-      const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
-      
-      // Tomorrow's calculation
-      const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      const tomorrowWeekNumber = Math.floor(tomorrowDiff / 7) % 4 + 1;
-      const tomorrowDay = dayNames[tomorrow.getDay()];
-      const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
-      const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
-      
-      setCurrentWeekData({ 
-        weekNumber: todayWeekNumber, 
-        currentDay, 
-        todaysMeal,
-        tomorrowWeekNumber,
-        tomorrowDay,
-        tomorrowsMeal
-      });
+      // Use a more stable date calculation that's consistent
+      const calculateWeekData = () => {
+        const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
+        const now = new Date();
+        // Reset hours to avoid timezone issues
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        
+        // Today's calculation
+        const todayDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const todayWeekNumber = Math.floor(todayDiff / 7) % 4 + 1;
+        const currentDay = dayNames[today.getDay()];
+        const todayWeekKey = `week${todayWeekNumber}`;
+        const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+        
+        // Tomorrow's calculation
+        const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        const tomorrowWeekNumber = Math.floor(tomorrowDiff / 7) % 4 + 1;
+        const tomorrowDay = dayNames[tomorrow.getDay()];
+        const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
+        const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
+        
+        return { 
+          weekNumber: todayWeekNumber, 
+          currentDay, 
+          todaysMeal,
+          tomorrowWeekNumber,
+          tomorrowDay,
+          tomorrowsMeal
+        };
+      };
+
+      // Add a small delay to ensure client-side rendering
+      const timer = setTimeout(() => {
+        setCurrentWeekData(calculateWeekData());
+      }, 100);
+
+      return () => clearTimeout(timer);
     }
   }, [mealPlan]);
 
@@ -674,13 +690,22 @@ const MealPlanner = () => {
             4-Week Meal Planner
           </h1>
           <p className="text-gray-600 mb-4">Click on any week to see your Woolworths shopping list</p>
-          <button
-            onClick={clearAllData}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center mx-auto text-sm"
-          >
-            <RotateCcw className="mr-2" size={16} />
-            Reset All Data
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+            <button
+              onClick={() => setShowEmergencyMealCreator(!showEmergencyMealCreator)}
+              className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition-colors flex items-center text-sm font-semibold"
+            >
+              <Zap className="mr-2" size={18} />
+              Emergency Meal Creator
+            </button>
+            <button
+              onClick={clearAllData}
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center text-sm"
+            >
+              <RotateCcw className="mr-2" size={16} />
+              Reset All Data
+            </button>
+          </div>
           
           {/* Today's and Tomorrow's Menu Section */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
@@ -802,6 +827,15 @@ const MealPlanner = () => {
           </div>
         </header>
         
+        {/* Emergency Meal Creator Section */}
+        {showEmergencyMealCreator && (
+          <div className="mb-8">
+            <EmergencyMealCreator />
+          </div>
+        )}
+        
+        {!showEmergencyMealCreator && (
+          <>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {Object.entries(mealPlan).map(([weekKey, week]) => (
             <WeekCard key={weekKey} weekKey={weekKey} week={week} />
@@ -933,6 +967,8 @@ const MealPlanner = () => {
         <footer className="text-center mt-8 text-gray-500">
           <p>Share this link with your partner to plan meals together!</p>
         </footer>
+        </>
+        )}
       </div>
     </div>
   );
