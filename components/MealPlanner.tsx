@@ -329,7 +329,8 @@ const MealPlanner = () => {
     }
   }), []);
 
-  // Meal-specific ingredients mapping
+  // Meal-specific ingredients mapping (currently unused but kept for potential future use)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mealIngredients: { [key: string]: string[] } = {
     "Bolognese pancakes or pasta": ["Ground beef/mince", "Pasta or pancake mix", "Onions", "Garlic", "Canned tomatoes", "Tomato paste"],
     "Miriam's curry": ["Curry powder/paste", "Coconut milk", "Rice", "Onions", "Garlic"],
@@ -602,19 +603,19 @@ const MealPlanner = () => {
   }, [mealPlan]);
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-        <Calendar className="mr-2 text-blue-600" size={20} />
+    <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-stone-200/50 p-8 hover:shadow-xl hover:bg-white/80 transition-all duration-300 group">
+      <h3 className="text-2xl font-bold text-stone-900 mb-6 flex items-center">
+        <Calendar className="mr-3 text-amber-700 group-hover:text-amber-600 transition-colors" size={24} />
         {week.title}
       </h3>
       
-      <div className="space-y-2 mb-4">
+      <div className="space-y-3 mb-8">
         {Object.entries(week.meals).map(([day, meal]) => {
           const mealStr = meal as string;
           return mealStr && (
-            <div key={day} className="flex">
-              <span className="font-medium text-gray-600 w-20">{day.slice(0, 3)}:</span>
-              <span className="text-gray-800">{mealStr}</span>
+            <div key={day} className="flex items-start">
+              <span className="font-semibold text-stone-600 w-24 shrink-0">{day.slice(0, 3)}:</span>
+              <span className="text-stone-900 font-medium leading-relaxed">{mealStr}</span>
             </div>
           );
         })}
@@ -622,35 +623,35 @@ const MealPlanner = () => {
       
       <button
         onClick={() => setSelectedWeek(selectedWeek === weekKey ? null : weekKey)}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center"
+        className="w-full border-2 border-stone-900 text-stone-900 py-4 px-6 rounded-xl hover:bg-stone-900 hover:text-white transition-all duration-300 flex items-center justify-center text-base font-medium"
       >
-        <ShoppingCart className="mr-2" size={16} />
+        <ShoppingCart className="mr-3" size={18} />
         {selectedWeek === weekKey ? 'Hide' : 'Show'} Shopping List
       </button>
       
       {selectedWeek === weekKey && (
-        <div className="mt-4 p-4 bg-green-50 rounded-md">
-          <h4 className="font-bold text-green-800 mb-3 flex items-center">
-            <ShoppingCart className="mr-2" size={16} />
-            Woolworths Shopping List
+        <div className="mt-6 p-6 bg-amber-50/50 rounded-xl border border-amber-200/50">
+          <h4 className="font-bold text-amber-900 mb-4 flex items-center text-lg">
+            <ShoppingCart className="mr-3" size={20} />
+            Shopping List
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {getSortedIngredients(weekKey, week.ingredients).map((ingredient, index) => {
               const itemKey = `${weekKey}-${ingredient}`;
               const isChecked = checkedItems[itemKey];
               
               return (
-                <div key={index} className="flex items-center">
+                <div key={index} className="flex items-center group">
                   <input
                     type="checkbox"
                     id={itemKey}
                     checked={isChecked || false}
                     onChange={() => toggleIngredient(weekKey, ingredient)}
-                    className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2 mr-3"
+                    className="w-5 h-5 text-amber-600 bg-white border-amber-300 rounded focus:ring-amber-500 focus:ring-2 mr-4 transition-all"
                   />
                   <label
                     htmlFor={itemKey}
-                    className={`text-green-700 cursor-pointer select-none ${
+                    className={`text-amber-800 cursor-pointer select-none font-medium group-hover:text-amber-900 transition-colors ${
                       isChecked ? 'line-through opacity-60' : ''
                     }`}
                   >
@@ -666,45 +667,45 @@ const MealPlanner = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4">
-      <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center">
-            <ChefHat className="mr-3 text-blue-600" size={40} />
+    <div className="min-h-screen bg-stone-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <header className="text-center mb-12">
+          <h1 className="text-6xl font-bold text-stone-900 mb-4 flex items-center justify-center leading-tight">
+            <ChefHat className="mr-4 text-amber-700" size={56} />
             4-Week Meal Planner
           </h1>
-          <p className="text-gray-600 mb-4">Click on any week to see your Woolworths shopping list</p>
+          <p className="text-xl text-stone-600 mb-8 max-w-2xl mx-auto">Create your perfect weekly meal plan and generate smart shopping lists</p>
           <button
             onClick={clearAllData}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center mx-auto text-sm"
+            className="border-2 border-stone-900 text-stone-900 px-6 py-3 rounded-lg hover:bg-stone-900 hover:text-stone-50 transition-all duration-300 flex items-center mx-auto text-base font-medium"
           >
-            <RotateCcw className="mr-2" size={16} />
+            <RotateCcw className="mr-2" size={18} />
             Reset All Data
           </button>
           
           {/* Today's and Tomorrow's Menu Section */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Today's Menu */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
-                <Calendar className="mr-2 text-green-600" size={20} />
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-stone-200/50 p-6 hover:shadow-xl transition-all duration-300">
+              <h3 className="text-2xl font-bold text-stone-800 mb-4 flex items-center justify-center">
+                <Calendar className="mr-3 text-amber-700" size={24} />
                 Today&apos;s Menu
               </h3>
               <div className="text-center">
                 {currentWeekData ? (
                   <>
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-base text-stone-500 mb-2 font-medium">
                       {currentWeekData.currentDay} - Week {currentWeekData.weekNumber}
                     </p>
-                    <p className="text-lg font-semibold text-gray-800 mb-4">
+                    <p className="text-xl font-bold text-stone-900 mb-6 leading-relaxed">
                       {currentWeekData.todaysMeal}
                     </p>
                     <button
                       onClick={() => setShowTodaysCooking(!showTodaysCooking)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
+                      className="border-2 border-amber-700 text-amber-700 px-6 py-3 rounded-xl hover:bg-amber-700 hover:text-white transition-all duration-300 flex items-center justify-center text-base font-medium w-full"
                     >
-                      <ChefHat className="mr-2" size={14} />
-                      {showTodaysCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
+                      <ChefHat className="mr-2" size={18} />
+                      {showTodaysCooking ? 'Hide' : 'Show'} Cooking Details
                     </button>
                     {showTodaysCooking && cookingMethods[currentWeekData.todaysMeal] && (
                       <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
@@ -802,37 +803,37 @@ const MealPlanner = () => {
           </div>
         </header>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
           {Object.entries(mealPlan).map(([weekKey, week]) => (
             <WeekCard key={weekKey} weekKey={weekKey} week={week} />
           ))}
         </div>
 
         {/* Saturday Meals Section */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <ChefHat className="mr-2 text-purple-600" size={20} />
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-stone-200/50 p-8 mb-8">
+          <h3 className="text-3xl font-bold text-stone-900 mb-6 flex items-center justify-center">
+            <ChefHat className="mr-4 text-amber-700" size={28} />
             Saturday Night Options
           </h3>
           
           <button
             onClick={() => setShowSaturdayMeals(!showSaturdayMeals)}
-            className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center mb-4"
+            className="w-full border-2 border-stone-900 text-stone-900 py-4 px-6 rounded-xl hover:bg-stone-900 hover:text-white transition-all duration-300 flex items-center justify-center mb-8 text-base font-medium"
           >
-            <Calendar className="mr-2" size={16} />
+            <Calendar className="mr-3" size={18} />
             {showSaturdayMeals ? 'Hide' : 'Show'} Saturday Meal Options
           </button>
 
           {showSaturdayMeals && (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.keys(saturdayMeals).map((meal) => (
                 <button
                   key={meal}
                   onClick={() => setSelectedSaturdayMeal(selectedSaturdayMeal === meal ? null : meal)}
-                  className={`p-3 rounded-md border-2 transition-colors text-left text-sm ${
+                  className={`p-4 rounded-xl border-2 transition-all duration-300 text-left font-medium ${
                     selectedSaturdayMeal === meal
-                      ? 'border-purple-600 bg-purple-50 text-purple-800'
-                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-purple-300'
+                      ? 'border-amber-700 bg-amber-50 text-amber-900 shadow-md'
+                      : 'border-stone-300 bg-white/50 text-stone-700 hover:border-amber-300 hover:bg-amber-50/30'
                   }`}
                 >
                   {meal}
@@ -930,8 +931,8 @@ const MealPlanner = () => {
           )}
         </div>
         
-        <footer className="text-center mt-8 text-gray-500">
-          <p>Share this link with your partner to plan meals together!</p>
+        <footer className="text-center mt-16 pb-8">
+          <p className="text-lg text-stone-500 font-medium">Share this link with your partner to plan meals together! 🍽️</p>
         </footer>
       </div>
     </div>
