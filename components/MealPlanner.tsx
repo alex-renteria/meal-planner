@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, ShoppingCart, ChefHat, RotateCcw } from 'lucide-react';
+import { Calendar, ShoppingCart, ChefHat, RotateCcw, Zap } from 'lucide-react';
+import EmergencyMealCreator from './EmergencyMealCreator';
 
 interface Week {
   title: string;
@@ -41,6 +42,7 @@ const MealPlanner = () => {
   const [selectedSaturdayMeal, setSelectedSaturdayMeal] = useState<string | null>(savedData?.selectedSaturdayMeal || null);
   const [showTodaysCooking, setShowTodaysCooking] = useState(false);
   const [showTomorrowsCooking, setShowTomorrowsCooking] = useState(false);
+  const [showEmergencyMealCreator, setShowEmergencyMealCreator] = useState(false);
   
   // Initialize staples as all checked (or from saved data)
   const [staplesChecked, setStaplesChecked] = useState<{ [key: string]: boolean }>(() => {
@@ -329,7 +331,8 @@ const MealPlanner = () => {
     }
   }), []);
 
-  // Meal-specific ingredients mapping
+  // Meal-specific ingredients mapping (currently unused but kept for potential future use)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mealIngredients: { [key: string]: string[] } = {
     "Bolognese pancakes or pasta": ["Ground beef/mince", "Pasta or pancake mix", "Onions", "Garlic", "Canned tomatoes", "Tomato paste"],
     "Miriam's curry": ["Curry powder/paste", "Coconut milk", "Rice", "Onions", "Garlic"],
@@ -674,13 +677,22 @@ const MealPlanner = () => {
             4-Week Meal Planner
           </h1>
           <p className="text-gray-600 mb-4">Click on any week to see your Woolworths shopping list</p>
-          <button
-            onClick={clearAllData}
-            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center mx-auto text-sm"
-          >
-            <RotateCcw className="mr-2" size={16} />
-            Reset All Data
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+            <button
+              onClick={() => setShowEmergencyMealCreator(!showEmergencyMealCreator)}
+              className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition-colors flex items-center text-sm font-semibold"
+            >
+              <Zap className="mr-2" size={18} />
+              🤖 AI Emergency Meal Creator
+            </button>
+            <button
+              onClick={clearAllData}
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center text-sm"
+            >
+              <RotateCcw className="mr-2" size={16} />
+              Reset All Data
+            </button>
+          </div>
           
           {/* Today's and Tomorrow's Menu Section */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
@@ -802,6 +814,15 @@ const MealPlanner = () => {
           </div>
         </header>
         
+        {/* Emergency Meal Creator Section */}
+        {showEmergencyMealCreator && (
+          <div className="mb-8">
+            <EmergencyMealCreator />
+          </div>
+        )}
+        
+        {!showEmergencyMealCreator && (
+          <>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {Object.entries(mealPlan).map(([weekKey, week]) => (
             <WeekCard key={weekKey} weekKey={weekKey} week={week} />
@@ -933,6 +954,8 @@ const MealPlanner = () => {
         <footer className="text-center mt-8 text-gray-500">
           <p>Share this link with your partner to plan meals together!</p>
         </footer>
+        </>
+        )}
       </div>
     </div>
   );
