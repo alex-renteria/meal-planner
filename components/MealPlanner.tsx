@@ -51,7 +51,7 @@ const MealPlanner = () => {
     const staples = [
       "🥛 Milk", "🥚 Eggs", "🍦 Yogurt", "🧀 Cheese", "🍶 Sour Cream", "🧈 Butter", "🌾 Flour", 
       "🧄 Garlic", "🍚 Rice", "🫘 Lentils", "🥕 Vegetables - Potatoes, Carrots, Onion", 
-      "🍅 Tomato Cans", "🫛 Chickpeas", "🫘 Beans", "🌮 Tortillas"
+      "🍅 Tomato Cans", "🫛 Chickpeas", "🫘 Beans", "🌮 Tortillas", "Nuts"
     ];
     const initialState: { [key: string]: boolean } = {};
     staples.forEach(item => {
