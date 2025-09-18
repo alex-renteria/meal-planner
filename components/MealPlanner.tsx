@@ -606,7 +606,7 @@ const MealPlanner = () => {
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+      <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center">
         <Calendar className="mr-2 text-blue-600" size={20} />
         {week.title}
       </h3>
@@ -831,7 +831,7 @@ const MealPlanner = () => {
 
         {/* Saturday Meals Section */}
         <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center">
             <ChefHat className="mr-2 text-purple-600" size={20} />
             Saturday Night Options
           </h3>
@@ -905,7 +905,7 @@ const MealPlanner = () => {
 
         {/* Staples Checklist Section */}
         <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center">
             <ShoppingCart className="mr-2 text-orange-600" size={20} />
             Staples Check List
           </h3>

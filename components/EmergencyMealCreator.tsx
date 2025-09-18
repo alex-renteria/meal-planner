@@ -93,7 +93,7 @@ const EmergencyMealCreator = () => {
       <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${styles.border}`}>
         <div className="flex items-center mb-4">
           <ChefHat className={`mr-2 ${styles.icon}`} size={20} />
-          <h3 className="text-xl font-bold text-gray-800">{recipe.name}</h3>
+          <h3 className="text-lg font-bold text-gray-800">{recipe.name}</h3>
           <span className={`ml-auto px-2 py-1 rounded-full text-xs font-semibold ${styles.badge} uppercase`}>
             {recipe.type}
           </span>
@@ -141,7 +141,7 @@ const EmergencyMealCreator = () => {
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center">
             <Zap className="mr-3 text-yellow-600" size={40} />
             AI Emergency Meal Creator
           </h1>
@@ -164,7 +164,7 @@ const EmergencyMealCreator = () => {
               onChange={(e) => setCurrentIngredient(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Enter an ingredient (e.g., eggs, flour, milk)"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-black"
             />
             <button
               onClick={addIngredient}
@@ -201,7 +201,7 @@ const EmergencyMealCreator = () => {
           <button
             onClick={generateRecipes}
             disabled={ingredients.length === 0 || isGenerating}
-            className="w-full bg-yellow-600 text-white py-3 px-6 rounded-md hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-lg font-semibold"
+            className="w-full bg-yellow-600 text-white py-3 px-6 rounded-md hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-base font-semibold"
           >
             {isGenerating ? (
               <>
@@ -227,7 +227,7 @@ const EmergencyMealCreator = () => {
         {/* Generated Recipes */}
         {generatedRecipes && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800 text-center mb-6">
               🤖 Your Gemini AI-Generated Recipes
             </h2>
             
@@ -247,7 +247,7 @@ const EmergencyMealCreator = () => {
 
             {/* AI Info Section */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">🤖 AI-Powered Cooking Tips:</h3>
+              <h3 className="text-base font-semibold text-blue-800 mb-3">🤖 AI-Powered Cooking Tips:</h3>
               <ul className="text-blue-700 space-y-2 text-sm">
                 <li>• These recipes were created by Google Gemini AI based on your ingredients</li>
                 <li>• Feel free to modify ingredients and steps based on your preferences</li>
