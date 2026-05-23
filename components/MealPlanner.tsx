@@ -203,7 +203,7 @@ const MealPlanner = () => {
       meals: {
         Monday: "Bolognese pancakes or pasta",
         Tuesday: "Miriam's curry",
-        Wednesday: "Chicken souvlaki",
+        Wednesday: "Chilli con carne",
         Thursday: "Broccoli / pumpkin soup and toast",
         Friday: "Take away",
         Saturday: "",
@@ -218,13 +218,14 @@ const MealPlanner = () => {
         "Tomato paste",
         "Carrots",
         "Celery",
+        "Kidney beans",
+        "Chilli powder",
+        "Cumin",
+        "Capsicum",
         "Curry powder/paste",
         "Coconut milk",
         "Rice",
         "Chicken breast/thighs",
-        "Greek yogurt",
-        "Cucumber",
-        "Pita bread",
         "Broccoli",
         "Pumpkin",
         "Vegetable stock",
@@ -237,7 +238,7 @@ const MealPlanner = () => {
     week2: {
       title: "Week 2",
       meals: {
-        Monday: "Chilli con carne",
+        Monday: "Lamb souvlaki",
         Tuesday: "Butter chicken",
         Wednesday: "Lentils soup",
         Thursday: "Stir fry noodles",
@@ -246,11 +247,9 @@ const MealPlanner = () => {
         Sunday: "Mexican carne asada"
       },
       ingredients: [
-        "Ground beef/mince",
-        "Kidney beans",
-        "Chilli powder",
-        "Cumin",
-        "Capsicum",
+        "Greek yogurt",
+        "Cucumber",
+        "Pita bread",
         "Chicken breast/thighs",
         "Butter chicken sauce",
         "Basmati rice",
@@ -396,6 +395,16 @@ const MealPlanner = () => {
         "Grill or pan-fry for 12-15 minutes until cooked through",
         "Mix remaining yogurt with cucumber for tzatziki",
         "Warm pita bread and serve with chicken and tzatziki"
+      ]
+    },
+    "Lamb souvlaki": {
+      ingredients: ["Leftover roast lamb, sliced", "200g Greek yogurt", "1 cucumber, diced", "4 pita breads", "Lemon juice", "Fresh garlic"],
+      instructions: [
+        "Slice leftover roast lamb into strips",
+        "Warm lamb in a pan over medium heat for 2-3 minutes",
+        "Mix Greek yogurt with diced cucumber and a squeeze of lemon for tzatziki",
+        "Warm pita bread in oven or dry pan",
+        "Serve lamb in pita with tzatziki"
       ]
     },
     "Broccoli / pumpkin soup and toast": {
