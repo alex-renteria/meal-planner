@@ -203,7 +203,7 @@ const MealPlanner = () => {
       meals: {
         Monday: "Bolognese pancakes or pasta",
         Tuesday: "Miriam's curry",
-        Wednesday: "Chicken souvlaki",
+        Wednesday: "Chilli con carne",
         Thursday: "Broccoli / pumpkin soup and toast",
         Friday: "Take away",
         Saturday: "",
@@ -218,13 +218,14 @@ const MealPlanner = () => {
         "Tomato paste",
         "Carrots",
         "Celery",
+        "Kidney beans",
+        "Chilli powder",
+        "Cumin",
+        "Capsicum",
         "Curry powder/paste",
         "Coconut milk",
         "Rice",
         "Chicken breast/thighs",
-        "Greek yogurt",
-        "Cucumber",
-        "Pita bread",
         "Broccoli",
         "Pumpkin",
         "Vegetable stock",
@@ -237,7 +238,7 @@ const MealPlanner = () => {
     week2: {
       title: "Week 2",
       meals: {
-        Monday: "Chilli con carne",
+        Monday: "Lamb souvlaki",
         Tuesday: "Butter chicken",
         Wednesday: "Lentils soup",
         Thursday: "Stir fry noodles",
@@ -246,11 +247,9 @@ const MealPlanner = () => {
         Sunday: "Mexican carne asada"
       },
       ingredients: [
-        "Ground beef/mince",
-        "Kidney beans",
-        "Chilli powder",
-        "Cumin",
-        "Capsicum",
+        "Greek yogurt",
+        "Cucumber",
+        "Pita bread",
         "Chicken breast/thighs",
         "Butter chicken sauce",
         "Basmati rice",
@@ -289,6 +288,12 @@ const MealPlanner = () => {
         "Chicken stock",
         "Noodles",
         "Jasmine rice",
+        "Sesame oil",
+        "Garlic",
+        "Firm tofu",
+        "Stock",
+        "Frozen spinach",
+        "Frozen peas",
         "Eggs",
         "Mixed vegetables for fried rice",
         "Frozen dumplings",
@@ -390,6 +395,16 @@ const MealPlanner = () => {
         "Grill or pan-fry for 12-15 minutes until cooked through",
         "Mix remaining yogurt with cucumber for tzatziki",
         "Warm pita bread and serve with chicken and tzatziki"
+      ]
+    },
+    "Lamb souvlaki": {
+      ingredients: ["Leftover roast lamb, sliced", "200g Greek yogurt", "1 cucumber, diced", "4 pita breads", "Lemon juice", "Fresh garlic"],
+      instructions: [
+        "Slice leftover roast lamb into strips",
+        "Warm lamb in a pan over medium heat for 2-3 minutes",
+        "Mix Greek yogurt with diced cucumber and a squeeze of lemon for tzatziki",
+        "Warm pita bread in oven or dry pan",
+        "Serve lamb in pita with tzatziki"
       ]
     },
     "Broccoli / pumpkin soup and toast": {
@@ -502,13 +517,35 @@ const MealPlanner = () => {
       ]
     },
     "Fried rice or doula ginger rice and dumplings": {
-      ingredients: ["2 cups cooked jasmine rice", "3 eggs, beaten", "300g mixed vegetables", "12 frozen dumplings", "2 tbsp fresh ginger, minced", "4 spring onions, sliced"],
+      ingredients: [
+        "── Fried Rice ──",
+        "2 cups cooked jasmine rice",
+        "3 eggs, beaten",
+        "300g mixed vegetables",
+        "2 tbsp fresh ginger, minced",
+        "4 spring onions, sliced",
+        "── Doula Ginger Rice ──",
+        "2 cups jasmine rice",
+        "1 tbsp sesame oil",
+        "2 cloves garlic, minced",
+        "2 tbsp fresh ginger, minced",
+        "200g firm tofu, cubed",
+        "2 cups stock",
+        "1 cup frozen spinach",
+        "1 cup frozen peas",
+        "── Both served with ──",
+        "12 frozen dumplings"
+      ],
       instructions: [
-        "Steam dumplings according to package instructions",
-        "Heat oil in wok, scramble eggs and set aside",
+        "Steam or pan-fry dumplings according to package instructions",
+        "── Fried Rice: Heat oil in wok, scramble eggs and set aside",
         "Stir-fry vegetables and ginger for 3 minutes",
         "Add rice, breaking up clumps, stir-fry for 5 minutes",
-        "Add eggs and spring onions, serve with dumplings"
+        "Add eggs and spring onions, serve with dumplings",
+        "── Ginger Rice: Heat sesame oil in pot, sauté garlic and ginger for 1 minute",
+        "Add tofu and cook until golden, about 3-4 minutes",
+        "Add rice and stock, bring to boil then simmer covered for 15 minutes",
+        "Stir in frozen spinach and peas in the last 5 minutes, serve with dumplings"
       ]
     },
     "Shepherd's pie": {
