@@ -69,11 +69,11 @@ const EmergencyMealCreator = () => {
         };
       case 'dessert':
         return {
-          border: 'border-purple-500',
-          icon: 'text-purple-600',
-          badge: 'bg-purple-100 text-purple-800',
-          headings: 'text-purple-700',
-          numbers: 'text-purple-600'
+          border: 'border-green-500',
+          icon: 'text-green-700',
+          badge: 'bg-green-100 text-green-800',
+          headings: 'text-green-700',
+          numbers: 'text-green-700'
         };
       default:
         return {
@@ -219,7 +219,7 @@ const EmergencyMealCreator = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-8">
             <p className="text-red-700 text-center">{error}</p>
           </div>
         )}
@@ -246,9 +246,9 @@ const EmergencyMealCreator = () => {
             </div>
 
             {/* Tips Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
-              <h3 className="text-lg font-semibold text-blue-800 mb-3">💡 Cooking Tips:</h3>
-              <ul className="text-blue-700 space-y-2 text-sm">
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6 mt-8">
+              <h3 className="text-lg font-semibold text-green-900 mb-3">💡 Cooking Tips:</h3>
+              <ul className="text-green-700 space-y-2 text-sm">
                 <li>• Always taste and adjust seasoning as you cook</li>
                 <li>• Feel free to modify ingredients based on your preferences</li>
                 <li>• Check that all ingredients are fresh before cooking</li>
