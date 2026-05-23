@@ -57,9 +57,9 @@ Requirements:
     // Parse the response and extract JSON
     const text = response.choices[0].message.content;
     console.log('AI Response:', text); // Debug log
-    
+
     // Clean the text and try to parse JSON
-    let cleanText = text.trim();
+    let cleanText = (text ?? '').trim();
     
     // Remove markdown code blocks if present
     cleanText = cleanText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
