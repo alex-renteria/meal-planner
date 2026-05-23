@@ -655,9 +655,9 @@ const MealPlanner = () => {
   }, [mealPlan]);
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-        <Calendar className="mr-2 text-blue-600" size={20} />
+    <div className="bg-white rounded-2xl border border-green-100 p-6 hover:border-green-300 transition-colors">
+      <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center">
+        <Calendar className="mr-2 text-green-700" size={20} />
         {week.title}
       </h3>
       
@@ -675,14 +675,14 @@ const MealPlanner = () => {
       
       <button
         onClick={() => setSelectedWeek(selectedWeek === weekKey ? null : weekKey)}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center"
+        className="w-full bg-green-700 text-white py-2 px-4 rounded-full hover:bg-green-800 transition-colors flex items-center justify-center"
       >
         <ShoppingCart className="mr-2" size={16} />
         {selectedWeek === weekKey ? 'Hide' : 'Show'} Shopping List
       </button>
       
       {selectedWeek === weekKey && (
-        <div className="mt-4 p-4 bg-green-50 rounded-md">
+        <div className="mt-4 p-4 bg-green-50 rounded-xl">
           <h4 className="font-bold text-green-800 mb-3 flex items-center">
             <ShoppingCart className="mr-2" size={16} />
             Woolworths Shopping List
@@ -719,25 +719,25 @@ const MealPlanner = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4">
+    <div className="min-h-screen bg-green-50 p-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center">
-            <ChefHat className="mr-3 text-blue-600" size={40} />
+          <h1 className="text-4xl font-bold text-green-900 mb-2 flex items-center justify-center">
+            <ChefHat className="mr-3 text-green-700" size={40} />
             4-Week Meal Planner
           </h1>
           <p className="text-gray-600 mb-4">Click on any week to see your Woolworths shopping list</p>
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
             <button
               onClick={() => setShowEmergencyMealCreator(!showEmergencyMealCreator)}
-              className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition-colors flex items-center text-sm font-semibold"
+              className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-colors flex items-center text-sm font-semibold"
             >
               <Zap className="mr-2" size={18} />
               Emergency Meal Creator
             </button>
             <button
               onClick={clearAllData}
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center text-sm"
+              className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition-colors flex items-center text-sm"
             >
               <RotateCcw className="mr-2" size={16} />
               Reset All Data
@@ -747,8 +747,8 @@ const MealPlanner = () => {
           {/* Today's and Tomorrow's Menu Section */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {/* Today's Menu */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+            <div className="bg-white rounded-2xl border border-green-100 p-4">
+              <h3 className="text-lg font-bold text-green-900 mb-2 flex items-center justify-center">
                 <Calendar className="mr-2 text-green-600" size={20} />
                 Today&apos;s Menu
               </h3>
@@ -763,13 +763,13 @@ const MealPlanner = () => {
                     </p>
                     <button
                       onClick={() => setShowTodaysCooking(!showTodaysCooking)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
+                      className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors flex items-center justify-center text-sm w-full"
                     >
                       <ChefHat className="mr-2" size={14} />
                       {showTodaysCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
                     </button>
                     {showTodaysCooking && cookingMethods[currentWeekData.todaysMeal] && (
-                      <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
+                      <div className="mt-4 p-4 bg-green-50 rounded-xl text-left">
                         <h4 className="font-bold text-green-800 mb-3 text-center">
                           How to cook {currentWeekData.todaysMeal}
                         </h4>
@@ -805,8 +805,8 @@ const MealPlanner = () => {
             </div>
 
             {/* Tomorrow's Menu */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+            <div className="bg-white rounded-2xl border border-green-100 p-4">
+              <h3 className="text-lg font-bold text-green-900 mb-2 flex items-center justify-center">
                 <Calendar className="mr-2 text-green-600" size={20} />
                 Tomorrow&apos;s Menu
               </h3>
@@ -821,13 +821,13 @@ const MealPlanner = () => {
                     </p>
                     <button
                       onClick={() => setShowTomorrowsCooking(!showTomorrowsCooking)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
+                      className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors flex items-center justify-center text-sm w-full"
                     >
                       <ChefHat className="mr-2" size={14} />
                       {showTomorrowsCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
                     </button>
                     {showTomorrowsCooking && cookingMethods[currentWeekData.tomorrowsMeal] && (
-                      <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
+                      <div className="mt-4 p-4 bg-green-50 rounded-xl text-left">
                         <h4 className="font-bold text-green-800 mb-3 text-center">
                           How to cook {currentWeekData.tomorrowsMeal}
                         </h4>
@@ -880,15 +880,15 @@ const MealPlanner = () => {
         </div>
 
         {/* Saturday Meals Section */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <ChefHat className="mr-2 text-purple-600" size={20} />
+        <div className="mt-8 bg-white rounded-2xl border border-green-100 p-6">
+          <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center">
+            <ChefHat className="mr-2 text-green-700" size={20} />
             Saturday Night Options
           </h3>
           
           <button
             onClick={() => setShowSaturdayMeals(!showSaturdayMeals)}
-            className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center mb-4"
+            className="w-full bg-green-700 text-white py-2 px-4 rounded-full hover:bg-green-800 transition-colors flex items-center justify-center mb-4"
           >
             <Calendar className="mr-2" size={16} />
             {showSaturdayMeals ? 'Hide' : 'Show'} Saturday Meal Options
@@ -900,10 +900,10 @@ const MealPlanner = () => {
                 <button
                   key={meal}
                   onClick={() => setSelectedSaturdayMeal(selectedSaturdayMeal === meal ? null : meal)}
-                  className={`p-3 rounded-md border-2 transition-colors text-left text-sm ${
+                  className={`p-3 rounded-full border-2 transition-colors text-left text-sm ${
                     selectedSaturdayMeal === meal
-                      ? 'border-purple-600 bg-purple-50 text-purple-800'
-                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-purple-300'
+                      ? 'border-green-700 bg-green-700 text-white'
+                      : 'border-green-100 bg-white text-gray-700 hover:border-green-400'
                   }`}
                 >
                   {meal}
@@ -913,8 +913,8 @@ const MealPlanner = () => {
           )}
 
           {selectedSaturdayMeal && (
-            <div className="mt-4 p-4 bg-purple-50 rounded-md">
-              <h4 className="font-bold text-purple-800 mb-3">
+            <div className="mt-4 p-4 bg-green-50 rounded-xl">
+              <h4 className="font-bold text-green-900 mb-3">
                 Ingredients for {selectedSaturdayMeal}:
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
@@ -935,11 +935,11 @@ const MealPlanner = () => {
                             [key]: !prev[key]
                           }));
                         }}
-                        className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 mr-3"
+                        className="w-4 h-4 text-green-700 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2 mr-3"
                       />
                       <label
                         htmlFor={itemKey}
-                        className={`text-purple-700 cursor-pointer select-none ${
+                        className={`text-green-700 cursor-pointer select-none ${
                           isChecked ? 'line-through opacity-60' : ''
                         }`}
                       >
@@ -954,9 +954,9 @@ const MealPlanner = () => {
         </div>
 
         {/* Staples Checklist Section */}
-        <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <ShoppingCart className="mr-2 text-orange-600" size={20} />
+        <div className="mt-6 bg-white rounded-2xl border border-green-100 p-6">
+          <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center">
+            <ShoppingCart className="mr-2 text-green-700" size={20} />
             Staples Check List
           </h3>
           <p className="text-gray-600 mb-4 text-sm">
@@ -965,7 +965,7 @@ const MealPlanner = () => {
           
           <button
             onClick={() => setShowStaples(!showStaples)}
-            className="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 transition-colors flex items-center justify-center mb-4"
+            className="w-full bg-green-700 text-white py-2 px-4 rounded-full hover:bg-green-800 transition-colors flex items-center justify-center mb-4"
           >
             <ShoppingCart className="mr-2" size={16} />
             {showStaples ? 'Hide' : 'Show'} Staples List
@@ -984,11 +984,11 @@ const MealPlanner = () => {
                       id={itemKey}
                       checked={isChecked || false}
                       onChange={() => toggleStaple(item)}
-                      className="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2 mr-3"
+                      className="w-4 h-4 text-green-700 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2 mr-3"
                     />
                     <label
                       htmlFor={itemKey}
-                      className={`text-orange-700 cursor-pointer select-none ${
+                      className={`text-green-700 cursor-pointer select-none ${
                         isChecked ? 'line-through opacity-60' : ''
                       }`}
                     >

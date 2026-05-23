@@ -53,11 +53,11 @@ const EmergencyMealCreator = () => {
     switch (type) {
       case 'main':
         return {
-          border: 'border-blue-500',
-          icon: 'text-blue-600',
-          badge: 'bg-blue-100 text-blue-800',
-          headings: 'text-blue-700',
-          numbers: 'text-blue-600'
+          border: 'border-green-700',
+          icon: 'text-green-700',
+          badge: 'bg-green-100 text-green-800',
+          headings: 'text-green-700',
+          numbers: 'text-green-700'
         };
       case 'side':
         return {
@@ -90,7 +90,7 @@ const EmergencyMealCreator = () => {
     const styles = getRecipeCardStyles(recipe.type);
     
     return (
-      <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${styles.border}`}>
+      <div className={`bg-white rounded-2xl border border-green-100 p-6 border-l-4 ${styles.border}`}>
         <div className="flex items-center mb-4">
           <ChefHat className={`mr-2 ${styles.icon}`} size={20} />
           <h3 className="text-xl font-bold text-gray-800">{recipe.name}</h3>
@@ -138,11 +138,11 @@ const EmergencyMealCreator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-4">
+    <div className="min-h-screen bg-green-50 p-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center">
-            <Zap className="mr-3 text-yellow-600" size={40} />
+          <h1 className="text-4xl font-bold text-green-900 mb-2 flex items-center justify-center">
+            <Zap className="mr-3 text-green-700" size={40} />
             Emergency Meal Creator
           </h1>
           <p className="text-gray-600 mb-4">
@@ -151,7 +151,7 @@ const EmergencyMealCreator = () => {
         </header>
 
         {/* Ingredients Input Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div className="bg-white rounded-2xl border border-green-100 p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
             <Plus className="mr-2 text-green-600" size={20} />
             Add Your Available Ingredients
@@ -164,11 +164,11 @@ const EmergencyMealCreator = () => {
               onChange={(e) => setCurrentIngredient(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Enter an ingredient (e.g., eggs, flour, milk)"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
             <button
               onClick={addIngredient}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center"
+              className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors flex items-center"
             >
               <Plus size={16} />
             </button>
@@ -182,12 +182,12 @@ const EmergencyMealCreator = () => {
                 {ingredients.map((ingredient, index) => (
                   <div
                     key={index}
-                    className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full flex items-center text-sm"
+                    className="bg-green-100 text-green-800 px-3 py-1 rounded-full flex items-center text-sm"
                   >
                     <span>{ingredient}</span>
                     <button
                       onClick={() => removeIngredient(index)}
-                      className="ml-2 text-yellow-600 hover:text-yellow-800"
+                      className="ml-2 text-green-700 hover:text-green-900"
                     >
                       <X size={14} />
                     </button>
@@ -201,7 +201,7 @@ const EmergencyMealCreator = () => {
           <button
             onClick={generateRecipes}
             disabled={ingredients.length === 0 || isGenerating}
-            className="w-full bg-yellow-600 text-white py-3 px-6 rounded-md hover:bg-yellow-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-lg font-semibold"
+            className="w-full bg-green-700 text-white py-3 px-6 rounded-full hover:bg-green-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-lg font-semibold"
           >
             {isGenerating ? (
               <>
