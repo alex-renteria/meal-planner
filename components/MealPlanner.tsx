@@ -262,7 +262,15 @@ const MealPlanner = () => {
         "Beef steak",
         "Lime",
         "Coriander",
-        "Corn tortillas"
+        "Corn tortillas",
+        "Can of chickpeas",
+        "Canned tomatoes (x3)",
+        "Can of beans",
+        "Celery",
+        "Carrots",
+        "Sweet potato",
+        "Red capsicum",
+        "Tomato paste"
       ]
     },
     week3: {
@@ -612,7 +620,7 @@ const MealPlanner = () => {
     if (typeof window !== 'undefined') {
       // Use a more stable date calculation that's consistent
       const calculateWeekData = () => {
-        const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
+        const startDate = new Date(2024, 7, 11); // August 11th, 2024 (month is 0-indexed)
         const now = new Date();
         // Reset hours to avoid timezone issues
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
