@@ -262,7 +262,15 @@ const MealPlanner = () => {
         "Beef steak",
         "Lime",
         "Coriander",
-        "Corn tortillas"
+        "Corn tortillas",
+        "Can of chickpeas",
+        "Canned tomatoes (x3)",
+        "Can of beans",
+        "Celery",
+        "Carrots",
+        "Sweet potato",
+        "Red capsicum",
+        "Tomato paste"
       ]
     },
     week3: {
@@ -612,7 +620,7 @@ const MealPlanner = () => {
     if (typeof window !== 'undefined') {
       // Use a more stable date calculation that's consistent
       const calculateWeekData = () => {
-        const startDate = new Date(2024, 7, 4); // August 4th, 2024 (month is 0-indexed)
+        const startDate = new Date(2024, 7, 18); // August 18th, 2024 (month is 0-indexed)
         const now = new Date();
         // Reset hours to avoid timezone issues
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -655,9 +663,11 @@ const MealPlanner = () => {
   }, [mealPlan]);
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-        <Calendar className="mr-2 text-blue-600" size={20} />
+    <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow border-t-4 border-blue-500">
+      <h3 className="font-display text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 mr-3">
+          <Calendar className="text-blue-600" size={18} />
+        </span>
         {week.title}
       </h3>
       
@@ -722,33 +732,38 @@ const MealPlanner = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-4">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center">
-            <ChefHat className="mr-3 text-blue-600" size={40} />
+          <h1 className="font-display text-5xl font-semibold text-gray-800 mb-3 flex items-center justify-center tracking-tight">
+            <ChefHat className="mr-3 text-blue-600" size={44} />
             4-Week Meal Planner
           </h1>
-          <p className="text-gray-600 mb-4">Click on any week to see your Woolworths shopping list</p>
-          <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+          <p className="text-gray-600 mb-5 text-base">Click on any week to see your Woolworths shopping list</p>
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch justify-center max-w-md mx-auto">
             <button
               onClick={() => setShowEmergencyMealCreator(!showEmergencyMealCreator)}
-              className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition-colors flex items-center text-sm font-semibold"
+              className="flex-1 bg-yellow-500 text-white px-5 py-2.5 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center text-sm font-semibold shadow-sm"
             >
-              <Zap className="mr-2" size={18} />
+              <Zap className="mr-2" size={16} />
               Emergency Meal Creator
             </button>
             <button
               onClick={clearAllData}
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center text-sm"
+              className="flex-1 bg-red-500 text-white px-5 py-2.5 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center text-sm font-semibold shadow-sm"
             >
               <RotateCcw className="mr-2" size={16} />
               Reset All Data
             </button>
           </div>
-          
+
           {/* Today's and Tomorrow's Menu Section */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          {currentWeekData && (
+            <h2 className="font-display mt-8 text-3xl font-semibold text-center text-gray-800 tracking-tight">
+              Week {currentWeekData.weekNumber}
+            </h2>
+          )}
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {/* Today's Menu */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+            <div className="bg-white rounded-xl shadow-md p-5 border-t-4 border-green-500">
+              <h3 className="font-display text-xl font-semibold text-gray-800 mb-2 flex items-center justify-center tracking-tight">
                 <Calendar className="mr-2 text-green-600" size={20} />
                 Today&apos;s Menu
               </h3>
@@ -805,8 +820,8 @@ const MealPlanner = () => {
             </div>
 
             {/* Tomorrow's Menu */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
+            <div className="bg-white rounded-xl shadow-md p-5 border-t-4 border-green-500">
+              <h3 className="font-display text-xl font-semibold text-gray-800 mb-2 flex items-center justify-center tracking-tight">
                 <Calendar className="mr-2 text-green-600" size={20} />
                 Tomorrow&apos;s Menu
               </h3>
@@ -880,9 +895,11 @@ const MealPlanner = () => {
         </div>
 
         {/* Saturday Meals Section */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <ChefHat className="mr-2 text-purple-600" size={20} />
+        <div className="mt-8 bg-white rounded-xl shadow-md p-6 border-t-4 border-purple-500">
+          <h3 className="font-display text-2xl font-semibold text-gray-800 mb-4 flex items-center tracking-tight">
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 mr-3">
+              <ChefHat className="text-purple-600" size={18} />
+            </span>
             Saturday Night Options
           </h3>
           
@@ -954,9 +971,11 @@ const MealPlanner = () => {
         </div>
 
         {/* Staples Checklist Section */}
-        <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-            <ShoppingCart className="mr-2 text-orange-600" size={20} />
+        <div className="mt-6 bg-white rounded-xl shadow-md p-6 border-t-4 border-orange-500">
+          <h3 className="font-display text-2xl font-semibold text-gray-800 mb-4 flex items-center tracking-tight">
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 mr-3">
+              <ShoppingCart className="text-orange-600" size={18} />
+            </span>
             Staples Check List
           </h3>
           <p className="text-gray-600 mb-4 text-sm">
