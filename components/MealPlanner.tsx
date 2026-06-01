@@ -753,7 +753,12 @@ const MealPlanner = () => {
           </div>
           
           {/* Today's and Tomorrow's Menu Section */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          {currentWeekData && (
+            <h2 className="mt-6 text-2xl font-bold text-center text-gray-800">
+              Week {currentWeekData.weekNumber}
+            </h2>
+          )}
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
             {/* Today's Menu */}
             <div className="bg-white rounded-lg shadow-md p-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-center justify-center">
