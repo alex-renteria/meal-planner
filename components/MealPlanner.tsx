@@ -620,7 +620,7 @@ const MealPlanner = () => {
     if (typeof window !== 'undefined') {
       // Use a more stable date calculation that's consistent
       const calculateWeekData = () => {
-        const startDate = new Date(2024, 7, 18); // August 18th, 2024 (month is 0-indexed)
+        const startDate = new Date(2024, 7, 19); // August 19th, 2024 — Monday, so weeks always roll over on Monday
         const now = new Date();
         // Reset hours to avoid timezone issues
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
