@@ -324,10 +324,14 @@ const MealPlanner = () => {
         "Ground lamb/beef",
         "Potatoes",
         "Frozen peas",
-        "Mixed vegetables",
-        "Canned tomatoes",
-        "Vegetable stock",
-        "Pasta (small shapes)",
+        "Carrots",
+        "Celery",
+        "Garlic",
+        "Beef stock",
+        "Canned chopped tomatoes",
+        "Red kidney beans (400g can)",
+        "Small shell pasta",
+        "Fresh parsley",
         "Chicken breast",
         "Breadcrumbs",
         "Eggs",
@@ -567,12 +571,23 @@ const MealPlanner = () => {
       ]
     },
     "Minestrone soup": {
-      ingredients: ["400g mixed vegetables", "400g can tomatoes", "1L vegetable stock", "100g small pasta shapes"],
+      ingredients: [
+        "3 bacon rashers, rind removed, roughly chopped",
+        "2 carrots, peeled, chopped",
+        "2 celery sticks, chopped",
+        "1 potato, peeled, chopped",
+        "2 garlic cloves, crushed",
+        "1L (4 cups) beef stock",
+        "400g can chopped tomatoes",
+        "400g can red kidney beans, rinsed, drained",
+        "80g (1 cup) small shell pasta",
+        "1/3 cup chopped fresh parsley"
+      ],
       instructions: [
-        "Heat oil in large pot, cook vegetables for 5 minutes",
-        "Add tomatoes and stock, bring to boil",
-        "Add pasta, simmer for 12-15 minutes until tender",
-        "Season with salt and pepper"
+        "Place the bacon, carrots, celery and potato in a large saucepan and stir to combine. Cook over high heat, uncovered, stirring often, for 5 minutes",
+        "Add the garlic, beef stock, tomatoes and red kidney beans, cover and bring to the boil. Reduce heat to medium-low and simmer, covered, stirring occasionally, for 30 minutes or until the vegetables are tender",
+        "Increase heat to high. Add pasta and cook, uncovered, stirring occasionally, until al dente",
+        "Season with salt and pepper. Ladle into bowls and sprinkle with parsley to serve"
       ]
     },
     "Chicken schnitzel and 3 veg": {
