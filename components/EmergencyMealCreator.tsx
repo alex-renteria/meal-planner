@@ -173,7 +173,7 @@ const EmergencyMealCreator = ({ pantryStaples = [] }: { pantryStaples?: string[]
               onChange={(e) => setCurrentIngredient(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Add ingredients, e.g. eggs, spinach, rice"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="flex-1 min-w-0 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
             />
             <button
               onClick={addIngredient}
