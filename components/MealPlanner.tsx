@@ -43,6 +43,8 @@ const MealPlanner = () => {
   const [showTodaysCooking, setShowTodaysCooking] = useState(false);
   const [showTomorrowsCooking, setShowTomorrowsCooking] = useState(false);
   const [showEmergencyMealCreator, setShowEmergencyMealCreator] = useState(false);
+  // How many weeks ahead of the calendar rotation the user has chosen to be (0-3)
+  const [weekOffset, setWeekOffset] = useState<number>(savedData?.weekOffset || 0);
   
   // Initialize staples as all checked (or from saved data)
   const [staplesChecked, setStaplesChecked] = useState<{ [key: string]: boolean }>(() => {
@@ -114,11 +116,12 @@ const MealPlanner = () => {
         showSaturdayMeals,
         showStaples,
         selectedSaturdayMeal,
-        staplesChecked
+        staplesChecked,
+        weekOffset
       };
       localStorage.setItem('mealPlannerData', JSON.stringify(dataToSave));
     }
-  }, [selectedWeek, checkedItems, showSaturdayMeals, showStaples, selectedSaturdayMeal, staplesChecked]);
+  }, [selectedWeek, checkedItems, showSaturdayMeals, showStaples, selectedSaturdayMeal, staplesChecked, weekOffset]);
 
   // Function to clear all saved data
   const clearAllData = () => {
@@ -131,6 +134,7 @@ const MealPlanner = () => {
       setShowSaturdayMeals(false);
       setShowStaples(false);
       setSelectedSaturdayMeal(null);
+      setWeekOffset(0);
       
       // Reset staples to all checked
       const initialStaples: { [key: string]: boolean } = {};
@@ -605,70 +609,145 @@ const MealPlanner = () => {
     }
   };
 
-  // Calculate current week and day (client-side only to avoid hydration mismatch)
-  const [currentWeekData, setCurrentWeekData] = useState<{
-    weekNumber: number;
-    currentDay: string;
-    todaysMeal: string;
-    tomorrowWeekNumber: number;
-    tomorrowDay: string;
-    tomorrowsMeal: string;
-  } | null>(null);
+  // Calendar-based rotation: weeks run Monday to Sunday, so Sunday's roast lines up
+  // with Monday's leftovers. Days are rounded so daylight saving shifts don't skew the count.
+  const getCalendarWeekNumber = (date: Date) => {
+    const cycleStart = new Date(2024, 7, 19); // Monday 19th August 2024 = Week 1 (month is 0-indexed)
+    const days = Math.round((date.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24));
+    return ((Math.floor(days / 7) % 4) + 4) % 4 + 1;
+  };
+
+  // Calculate today's date and calendar week (client-side only to avoid hydration mismatch)
+  const [today, setToday] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Only run on client side to prevent hydration mismatch
-    if (typeof window !== 'undefined') {
-      // Use a more stable date calculation that's consistent
-      const calculateWeekData = () => {
-        const startDate = new Date(2024, 7, 18); // August 18th, 2024 (month is 0-indexed)
-        const now = new Date();
-        // Reset hours to avoid timezone issues
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        
-        // Today's calculation
-        const todayDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        const todayWeekNumber = Math.floor(todayDiff / 7) % 4 + 1;
-        const currentDay = dayNames[today.getDay()];
-        const todayWeekKey = `week${todayWeekNumber}`;
-        const todaysMeal = mealPlan[todayWeekKey as keyof typeof mealPlan]?.meals[currentDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
-        
-        // Tomorrow's calculation
-        const tomorrowDiff = Math.floor((tomorrow.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        const tomorrowWeekNumber = Math.floor(tomorrowDiff / 7) % 4 + 1;
-        const tomorrowDay = dayNames[tomorrow.getDay()];
-        const tomorrowWeekKey = `week${tomorrowWeekNumber}`;
-        const tomorrowsMeal = mealPlan[tomorrowWeekKey as keyof typeof mealPlan]?.meals[tomorrowDay as keyof typeof mealPlan.week1.meals] || "No meal planned";
-        
-        return { 
-          weekNumber: todayWeekNumber, 
-          currentDay, 
-          todaysMeal,
-          tomorrowWeekNumber,
-          tomorrowDay,
-          tomorrowsMeal
-        };
-      };
+    const now = new Date();
+    setToday(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  }, []);
 
-      // Add a small delay to ensure client-side rendering
-      const timer = setTimeout(() => {
-        setCurrentWeekData(calculateWeekData());
-      }, 100);
+  const currentWeekData = useMemo(() => {
+    if (!today) return null;
 
-      return () => clearTimeout(timer);
-    }
-  }, [mealPlan]);
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // weekOffset shifts the calendar rotation to the week the user picked, so the
+    // rotation keeps advancing from there each Monday
+    const shiftWeek = (weekNumber: number) => ((weekNumber - 1 + weekOffset) % 4) + 1;
+    const getMeal = (weekNumber: number, day: string) => {
+      const meal = mealPlan[`week${weekNumber}` as keyof typeof mealPlan].meals[day as keyof Week['meals']];
+      if (meal) return meal;
+      return day === 'Saturday' ? 'Saturday night pick' : 'No meal planned';
+    };
+
+    const calendarWeekNumber = getCalendarWeekNumber(today);
+    const weekNumber = shiftWeek(calendarWeekNumber);
+    const currentDay = dayNames[today.getDay()];
+    const tomorrowWeekNumber = shiftWeek(getCalendarWeekNumber(tomorrow));
+    const tomorrowDay = dayNames[tomorrow.getDay()];
+
+    return {
+      calendarWeekNumber,
+      weekNumber,
+      currentDay,
+      todaysMeal: getMeal(weekNumber, currentDay),
+      tomorrowWeekNumber,
+      tomorrowDay,
+      tomorrowsMeal: getMeal(tomorrowWeekNumber, tomorrowDay)
+    };
+  }, [today, weekOffset, mealPlan]);
+
+  const selectWeek = (weekNumber: number) => {
+    if (!currentWeekData) return;
+    setWeekOffset((weekNumber - currentWeekData.calendarWeekNumber + 4) % 4);
+  };
+
+  const MenuCard = ({ label, day, weekNumber, meal, showCooking, onToggleCooking }: {
+    label: string;
+    day: string;
+    weekNumber: number;
+    meal: string;
+    showCooking: boolean;
+    onToggleCooking: () => void;
+  }) => {
+    const method = cookingMethods[meal];
+    return (
+      <div className="bg-white rounded-xl shadow-md p-5 border-t-4 border-green-500">
+        <h3 className="font-display text-xl font-semibold text-gray-800 mb-2 flex items-center justify-center tracking-tight">
+          <Calendar className="mr-2 text-green-600" size={20} />
+          {label}
+        </h3>
+        <div className="text-center">
+          <p className="text-sm text-gray-600 mb-1">
+            {day} - Week {weekNumber}
+          </p>
+          <p className="text-lg font-semibold text-gray-800 mb-4">
+            {meal}
+          </p>
+          {method ? (
+            <button
+              onClick={onToggleCooking}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
+            >
+              <ChefHat className="mr-2" size={14} />
+              {showCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
+            </button>
+          ) : (
+            <p className="text-sm text-gray-500">
+              {day === 'Saturday' ? 'Pick something from Saturday Night Options below' : 'No cooking method saved for this meal'}
+            </p>
+          )}
+          {showCooking && method && (
+            <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
+              <h4 className="font-bold text-green-800 mb-3 text-center">
+                How to cook {meal}
+              </h4>
+              {method.ingredients.length > 0 && (
+                <div className="mb-3">
+                  <h5 className="font-semibold text-green-700 mb-2">Ingredients:</h5>
+                  <ul className="text-xs text-green-600 space-y-1">
+                    {method.ingredients.map((ingredient, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="mr-2">•</span>
+                        <span>{ingredient}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div>
+                <h5 className="font-semibold text-green-700 mb-2">Instructions:</h5>
+                <ol className="text-xs text-green-600 space-y-1">
+                  {method.instructions.map((step, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="mr-2 font-semibold">{index + 1}.</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const WeekCard = ({ weekKey, week }: { weekKey: string; week: Week }) => (
-    <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow border-t-4 border-blue-500">
+    <div className={`bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow border-t-4 ${
+      currentWeekData && weekKey === `week${currentWeekData.weekNumber}` ? 'border-green-500 ring-2 ring-green-200' : 'border-blue-500'
+    }`}>
       <h3 className="font-display text-2xl font-semibold text-gray-800 mb-4 flex items-center">
         <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 mr-3">
           <Calendar className="text-blue-600" size={18} />
         </span>
         {week.title}
+        {currentWeekData && weekKey === `week${currentWeekData.weekNumber}` && (
+          <span className="ml-3 text-xs font-sans font-semibold uppercase tracking-wide bg-green-100 text-green-700 px-2 py-1 rounded-full">
+            This week
+          </span>
+        )}
       </h3>
       
       <div className="space-y-2 mb-4">
@@ -754,129 +833,60 @@ const MealPlanner = () => {
             </button>
           </div>
 
-          {/* Today's and Tomorrow's Menu Section */}
-          {currentWeekData && (
-            <h2 className="font-display mt-8 text-3xl font-semibold text-center text-gray-800 tracking-tight">
-              Week {currentWeekData.weekNumber}
-            </h2>
+          {/* Week Picker + Today's and Tomorrow's Menu Section */}
+          {currentWeekData ? (
+            <>
+              <h2 className="font-display mt-8 text-3xl font-semibold text-center text-gray-800 tracking-tight">
+                Week {currentWeekData.weekNumber}
+              </h2>
+              <div className="mt-3 flex flex-col items-center gap-2">
+                <div className="inline-flex rounded-lg bg-white shadow-sm p-1 gap-1" role="group" aria-label="Choose meal plan week">
+                  {[1, 2, 3, 4].map((weekNumber) => (
+                    <button
+                      key={weekNumber}
+                      onClick={() => selectWeek(weekNumber)}
+                      aria-pressed={currentWeekData.weekNumber === weekNumber}
+                      className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${
+                        currentWeekData.weekNumber === weekNumber
+                          ? 'bg-green-600 text-white shadow-sm'
+                          : 'text-gray-600 hover:bg-green-50'
+                      }`}
+                    >
+                      Week {weekNumber}
+                    </button>
+                  ))}
+                </div>
+                {weekOffset !== 0 && (
+                  <button
+                    onClick={() => setWeekOffset(0)}
+                    className="text-xs text-gray-500 underline hover:text-gray-700"
+                  >
+                    Back to calendar week (Week {currentWeekData.calendarWeekNumber})
+                  </button>
+                )}
+              </div>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                <MenuCard
+                  label="Today's Menu"
+                  day={currentWeekData.currentDay}
+                  weekNumber={currentWeekData.weekNumber}
+                  meal={currentWeekData.todaysMeal}
+                  showCooking={showTodaysCooking}
+                  onToggleCooking={() => setShowTodaysCooking(!showTodaysCooking)}
+                />
+                <MenuCard
+                  label="Tomorrow's Menu"
+                  day={currentWeekData.tomorrowDay}
+                  weekNumber={currentWeekData.tomorrowWeekNumber}
+                  meal={currentWeekData.tomorrowsMeal}
+                  showCooking={showTomorrowsCooking}
+                  onToggleCooking={() => setShowTomorrowsCooking(!showTomorrowsCooking)}
+                />
+              </div>
+            </>
+          ) : (
+            <p className="mt-8 text-gray-500">Loading...</p>
           )}
-          <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
-            {/* Today's Menu */}
-            <div className="bg-white rounded-xl shadow-md p-5 border-t-4 border-green-500">
-              <h3 className="font-display text-xl font-semibold text-gray-800 mb-2 flex items-center justify-center tracking-tight">
-                <Calendar className="mr-2 text-green-600" size={20} />
-                Today&apos;s Menu
-              </h3>
-              <div className="text-center">
-                {currentWeekData ? (
-                  <>
-                    <p className="text-sm text-gray-600 mb-1">
-                      {currentWeekData.currentDay} - Week {currentWeekData.weekNumber}
-                    </p>
-                    <p className="text-lg font-semibold text-gray-800 mb-4">
-                      {currentWeekData.todaysMeal}
-                    </p>
-                    <button
-                      onClick={() => setShowTodaysCooking(!showTodaysCooking)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
-                    >
-                      <ChefHat className="mr-2" size={14} />
-                      {showTodaysCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
-                    </button>
-                    {showTodaysCooking && cookingMethods[currentWeekData.todaysMeal] && (
-                      <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
-                        <h4 className="font-bold text-green-800 mb-3 text-center">
-                          How to cook {currentWeekData.todaysMeal}
-                        </h4>
-                        <div className="mb-3">
-                          <h5 className="font-semibold text-green-700 mb-2">Ingredients:</h5>
-                          <ul className="text-xs text-green-600 space-y-1">
-                            {cookingMethods[currentWeekData.todaysMeal].ingredients.map((ingredient, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="mr-2">•</span>
-                                <span>{ingredient}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-green-700 mb-2">Instructions:</h5>
-                          <ol className="text-xs text-green-600 space-y-1">
-                            {cookingMethods[currentWeekData.todaysMeal].instructions.map((step, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="mr-2 font-semibold">{index + 1}.</span>
-                                <span>{step}</span>
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-gray-500">Loading...</p>
-                )}
-              </div>
-            </div>
-
-            {/* Tomorrow's Menu */}
-            <div className="bg-white rounded-xl shadow-md p-5 border-t-4 border-green-500">
-              <h3 className="font-display text-xl font-semibold text-gray-800 mb-2 flex items-center justify-center tracking-tight">
-                <Calendar className="mr-2 text-green-600" size={20} />
-                Tomorrow&apos;s Menu
-              </h3>
-              <div className="text-center">
-                {currentWeekData ? (
-                  <>
-                    <p className="text-sm text-gray-600 mb-1">
-                      {currentWeekData.tomorrowDay} - Week {currentWeekData.tomorrowWeekNumber}
-                    </p>
-                    <p className="text-lg font-semibold text-gray-800 mb-4">
-                      {currentWeekData.tomorrowsMeal}
-                    </p>
-                    <button
-                      onClick={() => setShowTomorrowsCooking(!showTomorrowsCooking)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm w-full"
-                    >
-                      <ChefHat className="mr-2" size={14} />
-                      {showTomorrowsCooking ? 'Hide' : 'Show'} Ingredients & Cooking Method
-                    </button>
-                    {showTomorrowsCooking && cookingMethods[currentWeekData.tomorrowsMeal] && (
-                      <div className="mt-4 p-4 bg-green-50 rounded-md text-left">
-                        <h4 className="font-bold text-green-800 mb-3 text-center">
-                          How to cook {currentWeekData.tomorrowsMeal}
-                        </h4>
-                        <div className="mb-3">
-                          <h5 className="font-semibold text-green-700 mb-2">Ingredients:</h5>
-                          <ul className="text-xs text-green-600 space-y-1">
-                            {cookingMethods[currentWeekData.tomorrowsMeal].ingredients.map((ingredient, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="mr-2">•</span>
-                                <span>{ingredient}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <h5 className="font-semibold text-green-700 mb-2">Instructions:</h5>
-                          <ol className="text-xs text-green-600 space-y-1">
-                            {cookingMethods[currentWeekData.tomorrowsMeal].instructions.map((step, index) => (
-                              <li key={index} className="flex items-start">
-                                <span className="mr-2 font-semibold">{index + 1}.</span>
-                                <span>{step}</span>
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-gray-500">Loading...</p>
-                )}
-              </div>
-            </div>
-          </div>
         </header>
         
         {/* Emergency Meal Creator Section */}
@@ -912,7 +922,7 @@ const MealPlanner = () => {
           </button>
 
           {showSaturdayMeals && (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {Object.keys(saturdayMeals).map((meal) => (
                 <button
                   key={meal}
