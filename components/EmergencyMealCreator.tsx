@@ -3,18 +3,25 @@ import React, { useState } from 'react';
 import { Zap, Plus, X, ChefHat, Clock, Users, Loader2 } from 'lucide-react';
 import { generateEmergencyRecipes, GeneratedRecipe, RecipeGenerationResponse } from '../lib/ai-service';
 
-const EmergencyMealCreator = () => {
+const EmergencyMealCreator = ({ pantryStaples = [] }: { pantryStaples?: string[] }) => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [currentIngredient, setCurrentIngredient] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedRecipes, setGeneratedRecipes] = useState<RecipeGenerationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fallbackReason, setFallbackReason] = useState<string | null>(null);
+  const [usePantry, setUsePantry] = useState(true);
 
+  // Accepts one ingredient or a comma-separated list, e.g. "eggs, rice, spinach"
   const addIngredient = () => {
-    if (currentIngredient.trim() && !ingredients.includes(currentIngredient.trim())) {
-      setIngredients([...ingredients, currentIngredient.trim()]);
-      setCurrentIngredient('');
+    const newItems = currentIngredient
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item && !ingredients.some(existing => existing.toLowerCase() === item.toLowerCase()));
+    if (newItems.length > 0) {
+      setIngredients([...ingredients, ...new Set(newItems)]);
     }
+    setCurrentIngredient('');
   };
 
   const removeIngredient = (index: number) => {
@@ -36,11 +43,13 @@ const EmergencyMealCreator = () => {
 
     setIsGenerating(true);
     setError(null);
+    setFallbackReason(null);
     setGeneratedRecipes(null);
 
     try {
-      const recipes = await generateEmergencyRecipes(ingredients);
-      setGeneratedRecipes(recipes);
+      const result = await generateEmergencyRecipes(ingredients, usePantry ? pantryStaples : []);
+      setGeneratedRecipes(result.recipes);
+      setFallbackReason(result.fallbackReason ?? null);
     } catch (err) {
       setError('Failed to generate recipes. Please try again.');
       console.error('Recipe generation error:', err);
@@ -162,8 +171,8 @@ const EmergencyMealCreator = () => {
               type="text"
               value={currentIngredient}
               onChange={(e) => setCurrentIngredient(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Enter an ingredient (e.g., eggs, flour, milk)"
+              onKeyDown={handleKeyPress}
+              placeholder="Add ingredients, e.g. eggs, spinach, rice"
               className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
             />
             <button
@@ -197,6 +206,20 @@ const EmergencyMealCreator = () => {
             </div>
           )}
 
+          {pantryStaples.length > 0 && (
+            <label className="flex items-start gap-3 mb-4 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={usePantry}
+                onChange={() => setUsePantry(!usePantry)}
+                className="mt-0.5 w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+              />
+              <span>
+                Also use my pantry staples ({pantryStaples.length} ticked in Staples Check List)
+              </span>
+            </label>
+          )}
+
           {/* Generate Button */}
           <button
             onClick={generateRecipes}
@@ -224,11 +247,19 @@ const EmergencyMealCreator = () => {
           </div>
         )}
 
+        {fallbackReason && generatedRecipes && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8">
+            <p className="text-amber-800 text-center text-sm">
+              {fallbackReason}, so these are basic built-in suggestions rather than AI recipes.
+            </p>
+          </div>
+        )}
+
         {/* Generated Recipes */}
         {generatedRecipes && (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-              Your AI-Generated Recipes
+              {fallbackReason ? 'Quick Suggestions' : 'Your AI-Generated Recipes'}
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">

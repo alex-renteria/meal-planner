@@ -892,7 +892,11 @@ const MealPlanner = () => {
         {/* Emergency Meal Creator Section */}
         {showEmergencyMealCreator && (
           <div className="mb-8">
-            <EmergencyMealCreator />
+            <EmergencyMealCreator
+              pantryStaples={staplesList
+                .filter(item => staplesChecked[`staples-${item}`])
+                .map(item => item.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, ''))}
+            />
           </div>
         )}
         
