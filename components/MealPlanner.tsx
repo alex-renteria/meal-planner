@@ -1,6 +1,6 @@
 'use client';
-import React, { useState, useEffect, useMemo } from 'react';
-import { Calendar, ShoppingCart, ChefHat, RotateCcw, Zap } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Calendar, ShoppingCart, ChefHat, RotateCcw, Zap, ArrowLeft } from 'lucide-react';
 import EmergencyMealCreator from './EmergencyMealCreator';
 
 interface Week {
@@ -43,6 +43,7 @@ const MealPlanner = () => {
   const [showTodaysCooking, setShowTodaysCooking] = useState(false);
   const [showTomorrowsCooking, setShowTomorrowsCooking] = useState(false);
   const [showEmergencyMealCreator, setShowEmergencyMealCreator] = useState(false);
+  const emergencyMealCreatorRef = useRef<HTMLDivElement>(null);
   // How many weeks ahead of the calendar rotation the user has chosen to be (0-3)
   const [weekOffset, setWeekOffset] = useState<number>(savedData?.weekOffset || 0);
   
@@ -122,6 +123,18 @@ const MealPlanner = () => {
       localStorage.setItem('mealPlannerData', JSON.stringify(dataToSave));
     }
   }, [selectedWeek, checkedItems, showSaturdayMeals, showStaples, selectedSaturdayMeal, staplesChecked, weekOffset]);
+
+  // The creator opens below the menu cards, off-screen on phones, so bring it into view
+  useEffect(() => {
+    if (showEmergencyMealCreator) {
+      emergencyMealCreatorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [showEmergencyMealCreator]);
+
+  const closeEmergencyMealCreator = () => {
+    setShowEmergencyMealCreator(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Function to clear all saved data
   const clearAllData = () => {
@@ -818,11 +831,12 @@ const MealPlanner = () => {
           <p className="text-gray-600 mb-5 text-base">Click on any week to see your Woolworths shopping list</p>
           <div className="flex flex-col sm:flex-row gap-3 items-stretch justify-center max-w-md mx-auto">
             <button
-              onClick={() => setShowEmergencyMealCreator(!showEmergencyMealCreator)}
+              onClick={() => showEmergencyMealCreator ? closeEmergencyMealCreator() : setShowEmergencyMealCreator(true)}
+              aria-expanded={showEmergencyMealCreator}
               className="flex-1 bg-yellow-500 text-white px-5 py-2.5 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center text-sm font-semibold shadow-sm"
             >
               <Zap className="mr-2" size={16} />
-              Emergency Meal Creator
+              {showEmergencyMealCreator ? 'Close Emergency Meal Creator' : 'Emergency Meal Creator'}
             </button>
             <button
               onClick={clearAllData}
@@ -891,7 +905,14 @@ const MealPlanner = () => {
         
         {/* Emergency Meal Creator Section */}
         {showEmergencyMealCreator && (
-          <div className="mb-8">
+          <div ref={emergencyMealCreatorRef} className="mb-8 scroll-mt-4">
+            <button
+              onClick={closeEmergencyMealCreator}
+              className="mb-3 inline-flex items-center text-sm font-semibold text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="mr-1" size={16} />
+              Back to meal plan
+            </button>
             <EmergencyMealCreator
               pantryStaples={staplesList
                 .filter(item => staplesChecked[`staples-${item}`])
