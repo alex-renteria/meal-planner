@@ -1,7 +1,3 @@
-import { HfInference } from '@huggingface/inference';
-
-const hf = new HfInference(process.env.NEXT_PUBLIC_HUGGINGFACE_API_KEY);
-
 export interface GeneratedRecipe {
   name: string;
   type: 'main' | 'side' | 'dessert';
@@ -17,118 +13,37 @@ export interface RecipeGenerationResponse {
   dessert?: GeneratedRecipe;
 }
 
-export async function generateEmergencyRecipes(availableIngredients: string[]): Promise<RecipeGenerationResponse> {
-  const ingredientsList = availableIngredients.join(', ');
-  
-  const prompt = `Create recipes using these ingredients: ${ingredientsList}
-
-Return ONLY valid JSON in this exact format:
-{
-  "main": {
-    "name": "Simple Recipe Name",
-    "type": "main",
-    "ingredients": ["${availableIngredients[0]}", "${availableIngredients[1] || availableIngredients[0]}"],
-    "instructions": ["Mix ingredients", "Cook for 10 minutes", "Serve hot"],
-    "cookingTime": "15 minutes",
-    "servings": 2
-  }
+export interface EmergencyRecipesResult {
+  recipes: RecipeGenerationResponse;
+  // Set when the AI couldn't be reached and basic built-in recipes were used instead
+  fallbackReason?: string;
 }
 
-Requirements:
-- Return ONLY the JSON, no other text
-- Use only the provided ingredients
-- Keep recipes simple and practical
-- Include main dish only if limited ingredients`;
-
+export async function generateEmergencyRecipes(
+  availableIngredients: string[],
+  pantryStaples: string[] = []
+): Promise<EmergencyRecipesResult> {
   try {
-    // Try chat completion API first
-    const response = await hf.chatCompletion({
-      model: 'HuggingFaceTB/SmolLM3-3B',
-      messages: [
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      max_tokens: 800,
-      temperature: 0.7,
+    const response = await fetch('/api/emergency-recipes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ingredients: availableIngredients, pantry: pantryStaples }),
     });
+    const data = await response.json();
 
-    // Parse the response and extract JSON
-    const text = response.choices[0].message.content;
-    console.log('AI Response:', text); // Debug log
-
-    // Clean the text and try to parse JSON
-    let cleanText = (text ?? '').trim();
-    
-    // Remove markdown code blocks if present
-    cleanText = cleanText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    
-    // Try to find and parse JSON from the response
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.log('No JSON found in response, using fallback');
-      throw new Error('No valid JSON found in AI response');
-    }
-
-    let recipes: RecipeGenerationResponse;
-    try {
-      recipes = JSON.parse(jsonMatch[0]);
-    } catch (parseError) {
-      console.log('JSON parse error:', parseError);
-      throw new Error('Invalid JSON format in AI response');
-    }
-    
-    // Validate and clean up the response
-    const cleanedRecipes: RecipeGenerationResponse = {};
-    
-    if (recipes.main) {
-      cleanedRecipes.main = {
-        ...recipes.main,
-        type: 'main' as const,
-        ingredients: recipes.main.ingredients.filter(ing => 
-          availableIngredients.some(available => 
-            available.toLowerCase().includes(ing.toLowerCase()) || 
-            ing.toLowerCase().includes(available.toLowerCase())
-          )
-        )
+    if (!response.ok) {
+      return {
+        recipes: generateFallbackRecipes(availableIngredients),
+        fallbackReason: data.error || 'AI is unavailable right now',
       };
     }
-    
-    if (recipes.side) {
-      cleanedRecipes.side = {
-        ...recipes.side,
-        type: 'side' as const,
-        ingredients: recipes.side.ingredients.filter(ing => 
-          availableIngredients.some(available => 
-            available.toLowerCase().includes(ing.toLowerCase()) || 
-            ing.toLowerCase().includes(available.toLowerCase())
-          )
-        )
-      };
-    }
-    
-    if (recipes.dessert) {
-      cleanedRecipes.dessert = {
-        ...recipes.dessert,
-        type: 'dessert' as const,
-        ingredients: recipes.dessert.ingredients.filter(ing => 
-          availableIngredients.some(available => 
-            available.toLowerCase().includes(ing.toLowerCase()) || 
-            ing.toLowerCase().includes(available.toLowerCase())
-          )
-        )
-      };
-    }
-
-    return cleanedRecipes;
-    
+    return { recipes: data.recipes };
   } catch (error) {
     console.error('Error generating recipes:', error);
-    console.log('Using fallback recipe generation...');
-    
-    // Fallback with simple recipes based on common ingredients
-    return generateFallbackRecipes(availableIngredients);
+    return {
+      recipes: generateFallbackRecipes(availableIngredients),
+      fallbackReason: 'Could not reach the recipe service',
+    };
   }
 }
 
