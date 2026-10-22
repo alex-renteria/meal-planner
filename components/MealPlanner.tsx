@@ -56,7 +56,8 @@ const MealPlanner = () => {
     const staples = [
       "🥛 Milk", "🥚 Eggs", "🍦 Yogurt", "🧀 Cheese", "🍶 Sour Cream", "🧈 Butter", "🌾 Flour", 
       "🧄 Garlic", "🍚 Rice", "🫘 Lentils", "🥕 Vegetables - Potatoes, Carrots, Onion", 
-      "🍅 Tomato Cans", "🫛 Chickpeas", "🫘 Beans", "🌮 Tortillas"
+      "🍅 Tomato Cans", "🫛 Chickpeas", "🫘 Beans", "🌮 Tortillas",
+      "🥣 Weet-Bix", "🥣 Granola", "🍌 Bananas", "🫐 Berries"
     ];
     const initialState: { [key: string]: boolean } = {};
     staples.forEach(item => {
@@ -105,7 +106,11 @@ const MealPlanner = () => {
     "🍅 Tomato Cans", 
     "🫛 Chickpeas", 
     "🫘 Beans", 
-    "🌮 Tortillas"
+    "🌮 Tortillas",
+    "🥣 Weet-Bix",
+    "🥣 Granola",
+    "🍌 Bananas",
+    "🫐 Berries"
   ];
 
   // Save data to localStorage whenever state changes
@@ -352,9 +357,8 @@ const MealPlanner = () => {
         "Bacon",
         "Cream",
         "Parmesan cheese",
-        "Pork shoulder",
-        "BBQ sauce",
-        "Soft taco shells",
+        "Pork loin",
+        "Tortillas",
         "Coleslaw mix",
         "Avocado"
       ]
@@ -612,11 +616,10 @@ const MealPlanner = () => {
       ]
     },
     "Pulled pork tacos": {
-      ingredients: ["1kg pork shoulder", "1/2 cup BBQ sauce", "8 soft taco shells", "300g coleslaw mix", "1 avocado, sliced"],
+      ingredients: ["1kg pork loin", "8 tortillas", "300g coleslaw mix", "1 avocado, sliced"],
       instructions: [
-        "Slow cook pork shoulder for 6-8 hours until tender",
-        "Shred pork and mix with BBQ sauce",
-        "Warm taco shells",
+        "Cook pork loin until cooked through and tender, then slice or shred",
+        "Warm tortillas",
         "Fill with pork, coleslaw and avocado"
       ]
     }
